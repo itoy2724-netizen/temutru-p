@@ -1,11 +1,11 @@
 const mysql = require('mysql2/promise');
 (async () => {
     const pool = mysql.createPool({
-        host: 'mysql-b1e21b0-cemyilmaz3580-69aa.c.aivencloud.com',
-        user: 'avnadmin',
-        password: 'AVNS_Igm79oStNyahLlrp3ZY',
-        database: 'defaultdb',
-        port: 23515,
+        host: '102.220.160.109',
+        user: 'dimitri',
+        password: 'Losete00*',
+        database: 'dimitri',
+        port: 3306,
         ssl: { rejectUnauthorized: false }
     });
     const [rows] = await pool.query("SELECT id, name, image_url, LENGTH(image_url) as url_len FROM products WHERE image_url LIKE '%,%' LIMIT 3");
