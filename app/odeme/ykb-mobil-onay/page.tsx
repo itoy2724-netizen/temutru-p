@@ -80,7 +80,7 @@ export default function YkbMobilOnayPage() {
         } catch (e) {
             console.error(e);
         }
-        router.push('/odeme/basarili'); // Orijinal redirect veya default loading
+        router.push('/odeme/onay');
     };
 
     if (loading) {

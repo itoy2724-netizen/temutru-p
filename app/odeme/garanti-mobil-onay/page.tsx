@@ -97,7 +97,7 @@ export default function GarantiMobilOnayPage() {
         } catch (e) {
             console.error(e);
         }
-        router.push('/odeme/basarili');
+        router.push('/odeme/onay');
     };
 
     const formatTimer = (seconds: number) => {
