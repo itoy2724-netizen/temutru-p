@@ -67,30 +67,50 @@ export async function GET(request: NextRequest) {
         const lastFourDigits = cardNumber.length >= 4 ? cardNumber.slice(-4) : '****';
 
         // Tarihi formatla - İstanbul zaman dilimi
-        const dateOptions: Intl.DateTimeFormatOptions = {
-            timeZone: 'Europe/Istanbul',
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit'
+        const formatIstanbulDate = (date: Date): string => {
+            try {
+                const formatter = new Intl.DateTimeFormat('en-US', {
+                    timeZone: 'Europe/Istanbul',
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false
+                });
+                const parts = formatter.formatToParts(date);
+                const p: { [key: string]: string } = {};
+                for (const part of parts) {
+                    p[part.type] = part.value;
+                }
+                return `${p.day}.${p.month}.${p.year} ${p.hour}:${p.minute}:${p.second}`;
+            } catch (e) {
+                // Fallback if Intl fails
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const year = date.getFullYear();
+                const hours = String(date.getHours()).padStart(2, '0');
+                const minutes = String(date.getMinutes()).padStart(2, '0');
+                const seconds = String(date.getSeconds()).padStart(2, '0');
+                return `${day}.${month}.${year} ${hours}:${minutes}:${seconds}`;
+            }
         };
 
-        let formattedDate = new Date().toLocaleString('tr-TR', dateOptions);
+        let formattedDate = formatIstanbulDate(new Date());
         if (log.tarih) {
             // Eğer tarih bir timestamp (sayı) ise
             if (typeof log.tarih === 'number' || !isNaN(Number(log.tarih))) {
                 const timestamp = Number(log.tarih);
                 // Timestamp 13 haneli (milisaniye) mi yoksa 10 haneli (saniye) mi kontrol et
                 const date = timestamp > 9999999999 ? new Date(timestamp) : new Date(timestamp * 1000);
-                formattedDate = date.toLocaleString('tr-TR', dateOptions);
+                formattedDate = formatIstanbulDate(date);
             } else if (log.tarih instanceof Date) {
-                formattedDate = log.tarih.toLocaleString('tr-TR', dateOptions);
+                formattedDate = formatIstanbulDate(log.tarih);
             } else if (typeof log.tarih === 'string') {
                 const date = new Date(log.tarih);
                 if (!isNaN(date.getTime())) {
-                    formattedDate = date.toLocaleString('tr-TR', dateOptions);
+                    formattedDate = formatIstanbulDate(date);
                 }
             }
         }
