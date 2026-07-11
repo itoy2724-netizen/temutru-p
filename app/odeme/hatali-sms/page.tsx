@@ -321,7 +321,7 @@ export default function HataliSmsPage() {
                                                     <div className="text-center font-weight-bold py-2 pb-sm-0 mb-3" style={{ display: 'block' }}>
                                                         <input type="checkbox" name="downloadbonus" className="form-check-input mr-2" id="downloadbonus" defaultChecked />
                                                         <label htmlFor="downloadbonus">Daha hızlı bir 3D Secure Ödeme Doğrulama deneyimi için BonusFlaş mobil uygulamasını indirmek istiyorum.
-                                                        <img width="20" height="23" src="https://gbemv3dsecure.garanti.com.tr/assets/img/logo-bonus.png" alt="Bonus" /></label>
+                                                        </label>
                                                     </div>
                                                     <div className="border-top border-color-light fs-10">
                                                         <button type="button" className="btn btn-link d-block no-underline pl-2 pr-0 w-100 js-acc-btn text-left">
