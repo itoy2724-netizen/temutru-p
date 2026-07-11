@@ -243,51 +243,68 @@ export default function SepetimPage() {
                             {/* Adet kontrolü — sarı çöp + adet + yeşil + */}
                             <div style={{
                                 display: "flex",
-                                alignItems: "center",
-                                gap: "8px",
+                                flexDirection: "column",
+                                gap: "6px",
                                 marginTop: "10px",
                                 paddingLeft: "28px",
                             }}>
-                                <button
-                                    onClick={() => item.amount === 1
-                                        ? removeItem(item.product_id)
-                                        : updateQuantity(item.product_id, item.amount - 1)
-                                    }
-                                    style={{
-                                        width: "28px",
-                                        height: "28px",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        backgroundColor: "#ffd541",
-                                        border: "none",
-                                        borderRadius: "50%",
-                                        cursor: "pointer",
-                                    }}
-                                >
-                                    <svg width="12" height="14" viewBox="0 0 24 24" fill="none">
-                                        <path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m2 0v14a2 2 0 01-2 2H8a2 2 0 01-2-2V6h12z" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                    </svg>
-                                </button>
-                                <span style={{ fontSize: "13px", fontWeight: "600", color: "#333" }}>
-                                    {item.amount} <span style={{ fontWeight: "400", color: "#888" }}>adet</span>
-                                </span>
-                                <button
-                                    onClick={() => updateQuantity(item.product_id, item.amount + 1)}
-                                    style={{
-                                        width: "28px",
-                                        height: "28px",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        backgroundColor: "#45b02a",
-                                        border: "none",
-                                        borderRadius: "50%",
-                                        cursor: "pointer",
-                                    }}
-                                >
-                                    <Plus size={14} color="#fff" />
-                                </button>
+                                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                                    <button
+                                        onClick={() => item.amount === 1
+                                            ? removeItem(item.product_id)
+                                            : updateQuantity(item.product_id, item.amount - 1)
+                                        }
+                                        style={{
+                                            width: "28px",
+                                            height: "28px",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            backgroundColor: "#ffd541",
+                                            border: "none",
+                                            borderRadius: "50%",
+                                            cursor: "pointer",
+                                        }}
+                                    >
+                                        <svg width="12" height="14" viewBox="0 0 24 24" fill="none">
+                                            <path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m2 0v14a2 2 0 01-2 2H8a2 2 0 01-2-2V6h12z" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                        </svg>
+                                    </button>
+                                    <span style={{ fontSize: "13px", fontWeight: "600", color: "#333" }}>
+                                        {item.amount} <span style={{ fontWeight: "400", color: "#888" }}>adet</span>
+                                    </span>
+                                    <button
+                                        onClick={() => {
+                                            if (item.amount < 2) {
+                                                updateQuantity(item.product_id, item.amount + 1);
+                                            }
+                                        }}
+                                        disabled={item.amount >= 2}
+                                        style={{
+                                            width: "28px",
+                                            height: "28px",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            backgroundColor: item.amount >= 2 ? "#ccc" : "#45b02a",
+                                            border: "none",
+                                            borderRadius: "50%",
+                                            cursor: item.amount >= 2 ? "not-allowed" : "pointer",
+                                        }}
+                                    >
+                                        <Plus size={14} color="#fff" />
+                                    </button>
+                                </div>
+                                {item.amount >= 2 && (
+                                    <div style={{
+                                        color: "#e50019",
+                                        fontSize: "11px",
+                                        fontWeight: "600",
+                                        marginTop: "2px",
+                                    }}>
+                                        (Kampanya nedeniyle sepetinize en fazla 2 adet ekleyebilirsiniz)
+                                    </div>
+                                )}
                             </div>
                         </div>
                     );

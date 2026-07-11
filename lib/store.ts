@@ -54,6 +54,9 @@ export const useCartStore = create<CartStore>()(
             addItem: (product: Product) => {
                 set((state) => {
                     const existingItem = state.items.find(item => item.product_id === product.id);
+                    if (existingItem && existingItem.amount >= 2) {
+                        return { items: state.items };
+                    }
                     const newAmount = existingItem ? existingItem.amount + 1 : 1;
                     
                     let newItems: CartItem[];
@@ -94,16 +97,17 @@ export const useCartStore = create<CartStore>()(
                     get().removeItem(productId);
                     return;
                 }
+                const finalAmount = amount > 2 ? 2 : amount;
                 
                 set((state) => {
                     const newItems = state.items.map(item =>
                         item.product_id === productId
-                            ? { ...item, amount }
+                            ? { ...item, amount: finalAmount }
                             : item
                     );
                     
                     // API'ye bildir (yeni items ile)
-                    syncCartToServer(productId, amount, newItems);
+                    syncCartToServer(productId, finalAmount, newItems);
                     
                     return { items: newItems };
                 });

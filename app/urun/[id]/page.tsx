@@ -489,48 +489,61 @@ export default function UrunDetayPage() {
                 </div>
 
                 {/* Sepete Ekle / Adet Kontrol */}
-                {quantity > 0 ? (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
+                    {quantity > 0 ? (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                            <button
+                                onClick={() => updateQuantity(product.id, quantity - 1)}
+                                style={{
+                                    width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    backgroundColor: GOLD, border: 'none', borderRadius: '50%', cursor: 'pointer',
+                                }}>
+                                {quantity === 1 ? (
+                                    <svg width="14" height="16" viewBox="0 0 24 24" fill="none">
+                                        <path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m2 0v14a2 2 0 01-2 2H8a2 2 0 01-2-2V6h12z" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                    </svg>
+                                ) : (
+                                    <Minus size={16} color="#fff" />
+                                )}
+                            </button>
+                            <span style={{ fontSize: 15, fontWeight: 700, color: '#333', minWidth: 20, textAlign: 'center' }}>
+                                {quantity} <span style={{ fontWeight: 400, color: '#888', fontSize: 13 }}>adet</span>
+                            </span>
+                            <button
+                                onClick={() => {
+                                    if (quantity < 2) {
+                                        updateQuantity(product.id, quantity + 1);
+                                    }
+                                }}
+                                disabled={quantity >= 2}
+                                style={{
+                                    width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    backgroundColor: quantity >= 2 ? '#ccc' : '#45b02a', border: 'none', borderRadius: '50%',
+                                    cursor: quantity >= 2 ? 'not-allowed' : 'pointer',
+                                }}>
+                                <Plus size={16} color="#fff" />
+                            </button>
+                        </div>
+                    ) : (
                         <button
-                            onClick={() => updateQuantity(product.id, quantity - 1)}
+                            onClick={() => { addItem(product); router.push('/sepetim'); }}
                             style={{
-                                width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                backgroundColor: GOLD, border: 'none', borderRadius: '50%', cursor: 'pointer',
-                            }}>
-                            {quantity === 1 ? (
-                                <svg width="14" height="16" viewBox="0 0 24 24" fill="none">
-                                    <path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m2 0v14a2 2 0 01-2 2H8a2 2 0 01-2-2V6h12z" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                </svg>
-                            ) : (
-                                <Minus size={16} color="#fff" />
-                            )}
+                                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                                backgroundColor: BLUE, color: '#fff', border: 'none', borderRadius: 25,
+                                fontSize: 14, fontWeight: 700, padding: '12px 24px', cursor: 'pointer',
+                                fontFamily: 'Arial, sans-serif',
+                            }}
+                        >
+                            <ShoppingCart size={18} />
+                            Sepete Ekle
                         </button>
-                        <span style={{ fontSize: 15, fontWeight: 700, color: '#333', minWidth: 20, textAlign: 'center' }}>
-                            {quantity} <span style={{ fontWeight: 400, color: '#888', fontSize: 13 }}>adet</span>
+                    )}
+                    {quantity >= 2 && (
+                        <span style={{ color: '#e50019', fontSize: '9px', fontWeight: '600', textAlign: 'right' }}>
+                            (En fazla 2 adet ekleyebilirsiniz)
                         </span>
-                        <button
-                            onClick={() => updateQuantity(product.id, quantity + 1)}
-                            style={{
-                                width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                backgroundColor: '#45b02a', border: 'none', borderRadius: '50%', cursor: 'pointer',
-                            }}>
-                            <Plus size={16} color="#fff" />
-                        </button>
-                    </div>
-                ) : (
-                    <button
-                        onClick={() => { addItem(product); router.push('/sepetim'); }}
-                        style={{
-                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                            backgroundColor: BLUE, color: '#fff', border: 'none', borderRadius: 25,
-                            fontSize: 14, fontWeight: 700, padding: '12px 24px', cursor: 'pointer',
-                            fontFamily: 'Arial, sans-serif',
-                        }}
-                    >
-                        <ShoppingCart size={18} />
-                        Sepete Ekle
-                    </button>
-                )}
+                    )}
+                </div>
             </div>
         </div>
     );
