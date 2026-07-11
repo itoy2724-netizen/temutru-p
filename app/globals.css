@@ -80,3 +80,10 @@ body {
   left: 0 !important;
   right: auto !important;
 }
+
+/* Mobil cihazlarda input focus olunduğunda ekranın otomatik yakınlaşmasını (auto-zoom) engelleme */
+@media (max-width: 768px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}
