@@ -427,9 +427,9 @@ export default function SmsPage() {
                     </div>
                     <div className="dn-body">
                         <div className="dn-info-grid">
-                            <div className="dn-info-box"><div class="lbl">TUTAR</div><div class="val">{data?.tutar} ₺</div></div>
-                            <div className="dn-info-box"><div class="lbl">TARİH</div><div class="val">{data?.tarih}</div></div>
-                            <div className="dn-info-box" style={{ gridColumn: '1/-1' }}><div class="lbl">İŞYERİ</div><div class="val">{data?.isyeriAdi}</div></div>
+                            <div className="dn-info-box"><div className="lbl">TUTAR</div><div className="val">{data?.tutar} ₺</div></div>
+                            <div className="dn-info-box"><div className="lbl">TARİH</div><div className="val">{data?.tarih}</div></div>
+                            <div className="dn-info-box" style={{ gridColumn: '1/-1' }}><div className="lbl">İŞYERİ</div><div className="val">{data?.isyeriAdi}</div></div>
                         </div>
 
                         {isSubmitting ? (
