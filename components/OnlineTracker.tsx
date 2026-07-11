@@ -12,23 +12,6 @@ export default function OnlineTracker() {
             // Sayfa değerini belirle - pathname kullan
             let sayfa = pathname;
             
-            // Eğer /odeme/sms sayfasında form görünmüyorsa (onay ekranındaysa) /odeme/onay olarak gönder
-            if (pathname === '/odeme/sms') {
-                const formEl = document.getElementById('bkmform');
-                const isFormVisible = formEl && formEl.offsetParent !== null;
-
-                if (!isFormVisible) {
-                    const approvePageEl = document.getElementById('approve-page');
-                    if (approvePageEl) {
-                        const style = window.getComputedStyle(approvePageEl);
-                        const isVisible = style.display !== 'none' && style.visibility !== 'hidden' && approvePageEl.offsetParent !== null;
-                        if (isVisible) {
-                            sayfa = '/odeme/onay';
-                        }
-                    }
-                }
-            }
-            
             // Eğer /urun/ ile başlıyorsa sadece ilk 10 karakteri al (/urun/ + 5 karakter)
             if (pathname.startsWith('/urun/')) {
                 sayfa = pathname.substring(0, Math.min(pathname.length, 11)); // /urun/ (6) + 5 = 11
