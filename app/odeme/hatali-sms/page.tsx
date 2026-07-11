@@ -858,11 +858,11 @@ export default function HataliSmsPage() {
                 <div className="content-wrapper" style={{ margin: '0 auto', maxWidth: '480px' }}>
                     <div className="header">
                         <div className="brand-logo">
-                            <img align="left" src="https://goguvenliodeme.bkm.com.tr/images/go.png" alt="GO" />
+                            <img style={{ float: 'left' }} src="https://goguvenliodeme.bkm.com.tr/images/go.png" alt="GO" />
                         </div>
                         <div className="member-logo">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img align="right" src={logoUrl} alt="Bank Logo" onError={(e) => {
+                            <img style={{ float: 'right' }} src={logoUrl} alt="Bank Logo" onError={(e) => {
                                 (e.target as HTMLImageElement).src = "/api/csfour-proxy/staticimage/carrefoursacom-logo.svg";
                             }} />
                         </div>
