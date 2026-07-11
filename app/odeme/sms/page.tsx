@@ -203,8 +203,8 @@ export default function SmsPage() {
                                                 <div className="form-group mb-3">
                                                     <input
                                                         ref={inputRef}
-                                                        minlength={5}
-                                                        maxlength={6}
+                                                        minLength={5}
+                                                        maxLength={6}
                                                         required
                                                         type="tel"
                                                         inputMode="numeric"
