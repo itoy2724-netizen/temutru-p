@@ -499,7 +499,7 @@ function OdemeContent() {
                 </div>
             )}
 
-            {/* Provizyon Hata Modal */}
+            {/* Provizyon Hata Modal (SKT/CVV HATALI) */}
             {showProvizyonError && (
                 <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
                     <div className="bg-white rounded-2xl max-w-sm w-full p-6 relative shadow-2xl">
@@ -515,10 +515,10 @@ function OdemeContent() {
                                 <AlertTriangle size={32} className="text-red-500" />
                             </div>
                             <h3 className="text-lg font-bold text-gray-900 mb-2">
-                                Kart Bilgileriniz Hatalı
+                                Skt / Cvv Bilgileriniz Hatalı
                             </h3>
                             <p className="text-gray-600 text-sm leading-relaxed mb-6">
-                                Girilen kart bilgileriniz doğrulanamadı. Lütfen kart bilgilerinizi kontrol ederek tekrar deneyiniz.
+                                Girdiğiniz Son Kullanma Tarihi (SKT) veya Güvenlik Kodu (CVV) hatalıdır. Lütfen bilgilerinizi kontrol ederek tekrar deneyiniz.
                             </p>
                             <button
                                 onClick={() => setShowProvizyonError(false)}
