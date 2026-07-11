@@ -36,7 +36,10 @@ export default function UrunDetayPage() {
             .then(data => {
                 if (data.success) {
                     setProduct(data.data);
-                    if (data.data.category_name) {
+                    if (data.data.similarProducts) {
+                        setSimilarProducts(data.data.similarProducts);
+                    } else if (data.data.category_name) {
+                        // Fallback
                         fetch(`/api/products?category=${encodeURIComponent(data.data.category_name)}&limit=10`)
                             .then(res => res.json())
                             .then(catData => {
