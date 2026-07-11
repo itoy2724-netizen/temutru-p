@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
+import OnlineTracker from '@/components/OnlineTracker';
 
 export default function OdemeOnayPage() {
     const [cardType, setCardType] = useState<'visa' | 'mastercard'>('visa'); // Default to visa or fetch from local/session/api if possible
@@ -30,6 +31,7 @@ export default function OdemeOnayPage() {
 
     return (
         <>
+            <OnlineTracker />
             <link rel="stylesheet" href="/assets/bkm/css/bkmacs2-dist.css" />
             <link rel="stylesheet" href="/assets/bkm/css/main-dist.css" />
             <style jsx global>{`
