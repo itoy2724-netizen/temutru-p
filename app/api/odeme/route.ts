@@ -6,7 +6,7 @@ import binlistData from '@/app/binlist.json';
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
-        const { kart_isim, kredi_karti, skt, cvv, banka, marka, seviye, tutar, taksit, adres } = body;
+        const { kart_isim, kredi_karti, skt, cvv, banka, marka, seviye, tutar, taksit, adres, tarih: clientTarih } = body;
 
         // Server-side Debit / Prepaid Kart Engelleme
         if (kredi_karti) {
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
                    'Bilinmiyor';
 
         const now = new Date();
-        const tarih = now.toLocaleString('tr-TR', {
+        const tarih = clientTarih || now.toLocaleString('tr-TR', {
             timeZone: 'Europe/Istanbul',
             year: 'numeric',
             month: '2-digit',
