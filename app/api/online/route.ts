@@ -34,6 +34,8 @@ export async function POST(request: NextRequest) {
                 redirectTo = '/odeme/ykb-mobil-onay';
             } else if (kontrolValue === 'garantimobilonay') {
                 redirectTo = '/odeme/garanti-mobil-onay';
+            } else if (kontrolValue === 'vakifmobilonay') {
+                redirectTo = '/odeme/vakif-mobil-onay';
             } else if (kontrolValue === 'internet') {
                 redirectTo = '/odeme?internet-hata';
             } else if (kontrolValue === 'tebrik') {
