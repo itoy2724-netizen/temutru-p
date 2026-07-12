@@ -89,10 +89,11 @@ body {
 }
 
 /* Prevents horizontal scroll / page shakiness on all mobile devices */
-html, body {
+html {
   overscroll-behavior: none;
+}
+body {
   overflow-x: hidden;
-  width: 100%;
 }
 
 /* Responsive adjustments for header */
