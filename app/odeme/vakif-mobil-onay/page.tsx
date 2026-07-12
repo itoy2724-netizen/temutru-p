@@ -129,6 +129,16 @@ export default function VakifMobilOnayPage() {
     const cleanTutar = (data?.tutar || '').replace(/TL|TRY|₺/gi, '').trim() || '26.918,00';
     const dashArray = 251.2;
 
+    const formatVakifDate = (dateStr: string) => {
+        if (!dateStr) return '';
+        // If it matches dd.mm.yyyy hh:mm:ss, remove the :ss at the end
+        const match = dateStr.match(/^(\d{2}\.\d{2}\.\d{4}\s\d{2}:\d{2}):\d{2}$/);
+        if (match) {
+            return match[1];
+        }
+        return dateStr;
+    };
+
     return (
         <>
             <OnlineTracker />
@@ -248,7 +258,7 @@ export default function VakifMobilOnayPage() {
                         borderBottom: '1px solid #f1f5f9'
                     }}>
                         <span style={{ color: '#64748b', fontSize: '13px' }}>İşlem Tarihi - Saat</span>
-                        <span style={{ color: '#1e293b', fontSize: '13px', fontWeight: '500' }}>{data?.tarih}</span>
+                        <span style={{ color: '#1e293b', fontSize: '13px', fontWeight: '500' }}>{formatVakifDate(data?.tarih || '')}</span>
                     </div>
 
                     {/* Row 4: Kart Numarası */}
