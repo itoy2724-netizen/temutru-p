@@ -344,13 +344,16 @@ export default function SepetimPage() {
                 </div>
 
                 {/* TOPLAM + Siparişi Tamamla */}
-                <div style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    padding: "14px 16px",
-                    borderTop: "1px solid #eee",
-                }}>
+                <div 
+                    className="checkout-container"
+                    style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        padding: "14px 16px",
+                        borderTop: "1px solid #eee",
+                    }}
+                >
                     <div>
                         <div style={{ fontSize: "11px", fontWeight: "700", color: "#666", marginBottom: "2px" }}>TOPLAM</div>
                         <div style={{ fontSize: "17px", fontWeight: "800", color: "#111" }}>
@@ -359,6 +362,7 @@ export default function SepetimPage() {
                     </div>
                     <button
                         onClick={handleCheckout}
+                        className="checkout-btn"
                         style={{
                             backgroundColor: NAVY,
                             color: "#fff",

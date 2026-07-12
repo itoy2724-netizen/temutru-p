@@ -469,12 +469,15 @@ export default function UrunDetayPage() {
             </div>
 
             {/* Fixed Bottom Bar */}
-            <div style={{
-                position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 30,
-                background: '#fff', borderTop: '1px solid #eee',
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                padding: '10px 14px', maxWidth: 480, margin: '0 auto',
-            }}>
+            <div 
+                className="product-bottom-bar"
+                style={{
+                    position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 30,
+                    background: '#fff', borderTop: '1px solid #eee',
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    padding: '10px 14px', maxWidth: 480, margin: '0 auto',
+                }}
+            >
                 {/* Price */}
                 <div>
                     {hasDiscount && regularPrice && (
@@ -527,6 +530,7 @@ export default function UrunDetayPage() {
                     ) : (
                         <button
                             onClick={() => { addItem(product); router.push('/sepetim'); }}
+                            className="product-buy-btn"
                             style={{
                                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
                                 backgroundColor: BLUE, color: '#fff', border: 'none', borderRadius: 25,

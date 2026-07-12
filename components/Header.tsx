@@ -44,13 +44,16 @@ export default function Header() {
                     ROW 1 — Beyaz zemin
                     ≡  |  Carrefour (C) SA  |  🎧  |  [Sipariş Takip]
                 ═══════════════════════════════════════════════════ */}
-                <div style={{
-                    display: "flex",
-                    alignItems: "center",
-                    backgroundColor: "#fff",
-                    padding: "10px 14px",
-                    gap: "12px",
-                }}>
+                <div 
+                    className="header-row-1"
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        backgroundColor: "#fff",
+                        padding: "10px 14px",
+                        gap: "12px",
+                    }}
+                >
                     {/* ≡ Hamburger — mavi 3 çizgi */}
                     <button
                         aria-label="Menü"
@@ -75,6 +78,7 @@ export default function Header() {
                         <img
                             src="/api/csfour-proxy/staticimage/carrefoursacom-logo.svg"
                             alt="CarrefourSA"
+                            className="header-logo"
                             style={{ height: "32px", width: "auto", maxWidth: "150px" }}
                         />
                     </Link>
@@ -92,6 +96,7 @@ export default function Header() {
                         <img
                             src="/api/csfour-proxy/staticimage/call-center-icon.svg"
                             alt="Sizi Dinliyoruz"
+                            className="header-headset"
                             style={{ width: "38px", height: "34px" }}
                         />
                     </a>
@@ -99,6 +104,7 @@ export default function Header() {
                     {/* [Sipariş Takip] — mavi OUTLINE buton, rounded */}
                     <button
                         onClick={() => setIsOrderTrackOpen(true)}
+                        className="header-siparis-takip"
                         style={{
                             flexShrink: 0,
                             border: `2px solid ${NAVY}`,
