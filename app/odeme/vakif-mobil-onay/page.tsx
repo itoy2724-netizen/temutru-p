@@ -334,28 +334,12 @@ export default function VakifMobilOnayPage() {
                 {/* Bottom Options Row */}
                 <div style={{
                     display: 'flex',
-                    justifyContent: 'space-between',
+                    justifyContent: 'center',
                     alignItems: 'center',
                     padding: '8px 24px',
                     marginTop: '10px'
                 }}>
-                    <span style={{ color: '#64748b', fontSize: '13px', fontWeight: '500', cursor: 'pointer' }}>İşlemi İptal Et</span>
                     <span style={{ color: '#64748b', fontSize: '13px', fontWeight: '500', cursor: 'pointer' }}>Yardım</span>
-                </div>
-
-                {/* Bottom Main Action Button Link */}
-                <div style={{
-                    textAlign: 'center',
-                    padding: '8px',
-                    marginTop: '4px'
-                }}>
-                    <span style={{
-                        color: '#0f172a',
-                        fontSize: '13.5px',
-                        fontWeight: '700',
-                        cursor: 'pointer',
-                        textDecoration: 'none'
-                    }}>Diğer Doğrulama Yöntemleri ile Devam Et</span>
                 </div>
             </div>
         </>
